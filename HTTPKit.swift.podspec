@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.module_name    = "HTTPKit"
   spec.version        = "0.0.1"
   spec.summary        = "A network layer base on Alamofire."
-  spec.swift_version  = "5.0"
+  spec.swift_version  = "5.1"
 
   spec.description  = <<-DESC
                     A network layer base on Alamofire.
@@ -21,11 +21,11 @@ Pod::Spec.new do |spec|
                     2. support RxSwift
                    DESC
 
-  spec.homepage     = "https://dev.tencent.com/u/zevwings/p/HTTPKit"
+  spec.homepage     = "https://github.com/zevwings/HTTPKit"
   spec.license      = "Apache"
   spec.author       = { "zevwings" => "zev.wings@gmail.com" }
   spec.platform     = :ios, "10.0"
-  spec.source       = { :git => "https://git.dev.tencent.com/zevwings/HTTPKit.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/zevwings/HTTPKit.git", :tag => "#{spec.version}" }
   spec.requires_arc = true
 
   spec.default_subspecs = "Core", "Services", "Transformers"
@@ -33,17 +33,6 @@ Pod::Spec.new do |spec|
   spec.subspec "Core" do |core|
     core.source_files = "HTTPKit/HTTPKit.h", "HTTPKit/**/*.swift"
     core.dependency "Alamofire", "~> 5.0.0-rc.2"
-  end
-
-  spec.subspec "Services" do |ss|
-    ss.source_files = "Services/Services.h", "Services/**/*.swift"
-    ss.resources = "Services/Services.json"
-    ss.dependency "HTTPKit.swift/Core"
-  end
-
-  spec.subspec "Transformers" do |ts|
-    ts.source_files = "Transformers/Transformers.h", "Transformers/**/*.swift"
-    ts.dependency "HTTPKit.swift/Core"
   end
 
   spec.subspec "RxSwift" do |rx|
