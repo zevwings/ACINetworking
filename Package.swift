@@ -5,8 +5,8 @@ import PackageDescription
 
 let package = Package(
     name: "HTTPKit",
+    platforms: [.iOS(.v10)],
     products: [
-        // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "HTTPKit",
             targets: ["HTTPKit"]
@@ -18,7 +18,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.0.0-rc.2"),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.0.0")
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.0.0"),
     ],
     targets: [
         .target(
@@ -28,18 +28,9 @@ let package = Package(
         ),
         .target(
             name: "RxSupport",
-            dependencies: ["HTTPKit"],
+            dependencies: ["HTTPKit", "RxSwift"],
             path: "RxSupport"
         ),
-        .target(
-            name: "HandyJSONSupport",
-            dependencies: ["HTTPKit"],
-            path: "HandyJSONSupport"
-        ),
-        .target(
-            name: "SwiftyJSONSupport",
-            dependencies: ["HTTPKit"],
-            path: "SwiftyJSONSupport"
-        )
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )

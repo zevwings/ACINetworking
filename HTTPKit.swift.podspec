@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => "https://github.com/zevwings/HTTPKit.git", :tag => "#{spec.version}" }
   spec.requires_arc = true
 
-  spec.default_subspecs = "Core", "Services", "Transformers"
+  spec.default_subspecs = "Core"
 
   spec.subspec "Core" do |core|
     core.source_files = "HTTPKit/HTTPKit.h", "HTTPKit/**/*.swift"
@@ -39,18 +39,6 @@ Pod::Spec.new do |spec|
     rx.source_files = "RxSupport/RxSupport.h", "RxSupport/**/*.swift"
     rx.dependency "HTTPKit.swift/Core"
     rx.dependency "RxSwift"
-  end
-
-  spec.subspec "HandyJSON" do |json|
-    json.source_files = "HandyJSONSupport/HandyJSONSupport.h", "HandyJSONSupport/**/*.swift"
-    json.dependency "HTTPKit.swift/RxSwift"
-    json.dependency "HandyJSON"
-  end
-
-  spec.subspec "SwiftyJSON" do |json|
-    json.source_files = "SwiftyJSONSupport/SwiftyJSONSupport.h", "SwiftyJSONSupport/**/*.swift"
-    json.dependency "HTTPKit.swift/RxSwift"
-    json.dependency "SwiftyJSON"
   end
 
 end
