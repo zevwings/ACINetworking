@@ -1,10 +1,3 @@
-#
-#  Be sure to run `pod spec lint HTTPKit.swift.podspec" to ensure this is a
-#  valid spec and to remove all comments including this before submitting the spec.
-#
-#  To learn more about Podspec attributes see https://guides.cocoapods.org/syntax/podspec.html
-#  To see working Podspecs in the CocoaPods repo see https://github.com/CocoaPods/Specs/
-#
 
 Pod::Spec.new do |spec|
 
@@ -18,7 +11,7 @@ Pod::Spec.new do |spec|
                     A network layer base on Alamofire.
                     1. support HandyJSON decode Data
                     2. support SwiftyJSON decode Data
-                    2. support RxSwift
+                    3. support RxSwift
                    DESC
 
   spec.homepage     = "https://github.com/zevwings/HTTPKit"
