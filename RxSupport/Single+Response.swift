@@ -33,8 +33,8 @@ public extension PrimitiveSequence where Trait == SingleTrait, Element == Respon
         return flatMap { .just(try $0.mapImage()) }
     }
 
-    func mapJSON(failsOnEmptyData: Bool = true) -> Single<Any> {
-        return flatMap { .just(try $0.mapJSON(failsOnEmptyData: failsOnEmptyData)) }
+    func mapDictionary(failsOnEmptyData: Bool = true) -> Single<Any> {
+        return flatMap { .just(try $0.mapDictionary(failsOnEmptyData: failsOnEmptyData)) }
     }
 
     func mapString(atKeyPath keyPath: String? = nil) -> Single<String> {
