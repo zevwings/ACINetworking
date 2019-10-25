@@ -74,7 +74,7 @@ public extension Response {
         return image
     }
 
-    func mapDictionary(failsOnEmptyData: Bool = true) throws -> Any {
+    func mapJSON(failsOnEmptyData: Bool = true) throws -> Any {
         do {
             return try JSONSerialization.jsonObject(with: data, options: .allowFragments)
         } catch {
@@ -87,7 +87,7 @@ public extension Response {
 
     func mapString(atKeyPath keyPath: String? = nil) throws -> String {
         if let keyPath = keyPath {
-            guard let jsonDictionary = try mapDictionary() as? NSDictionary,
+            guard let jsonDictionary = try mapJSON() as? NSDictionary,
                 let string = jsonDictionary.value(forKeyPath: keyPath) as? String else {
                     throw HTTPError.cast(value: data, targetType: String.self)
             }
