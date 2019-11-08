@@ -5,7 +5,14 @@
 //  Copyright © 2019 zevwings. All rights reserved.
 //
 
-import Foundation
+
+#if os(macOS)
+import AppKit
+public typealias Image = NSImage
+#else
+import UIKit
+public typealias Image = UIImage
+#endif
 
 public final class Response {
 
@@ -67,9 +74,9 @@ public extension Response {
         return try filter(statusCodes: 200...399)
     }
 
-    func mapImage() throws -> UIImage {
-        guard let image = UIImage(data: data) else {
-            throw HTTPError.cast(value: data, targetType: UIImage.self)
+    func mapImage() throws -> Image {
+        guard let image = Image(data: data) else {
+            throw HTTPError.cast(value: data, targetType: Image.self)
         }
         return image
     }
