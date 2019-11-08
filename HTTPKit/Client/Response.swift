@@ -5,7 +5,6 @@
 //  Copyright © 2019 zevwings. All rights reserved.
 //
 
-
 #if os(macOS)
 import AppKit
 public typealias Image = NSImage
