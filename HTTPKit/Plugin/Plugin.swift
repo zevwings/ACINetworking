@@ -29,6 +29,9 @@ public protocol PluginType {
     /// 网络请求收到结果
     func didReceive<R>(_ result: Result<Response, HTTPError>, request: R) where R: Request
 
+    /// 经过Intercepter， Transformer处理之后最终获取的结果
+    func didComplete<R>(_ result: Result<Response, HTTPError>, request: R) where R: Request
+
     /// 网络请求需要自动重试
     func retry(_ error: Error, completion: @escaping (RetryResult) -> Void)
 }
@@ -48,6 +51,8 @@ extension PluginType {
     public func process<R>(_ progress: Progress, request: R) where R: Request { }
 
     public func didReceive<R>(_ result: Result<Response, HTTPError>, request: R) where R: Request { }
+
+    public func didComplete<R>(_ result: Result<Response, HTTPError>, request: R) where R: Request {}
 
     public func retry(_ error: Error, completion: @escaping (RetryResult) -> Void) {}
 

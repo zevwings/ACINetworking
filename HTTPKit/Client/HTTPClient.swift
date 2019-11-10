@@ -93,6 +93,11 @@ public final class HTTPClient<R: Request> : Client {
 
                     response.update(data)
 
+                    self.plugins.forEach { $0.didComplete(.success(response), request: request) }
+                    if let interceptor = request.interceptor {
+                        interceptor.didComplete(.success(response), request: request)
+                    }
+
                     completionHandler(.success(response))
                 } catch let error {
                     let err = HTTPError.underlying(error, request: response.request, response: response.response)
