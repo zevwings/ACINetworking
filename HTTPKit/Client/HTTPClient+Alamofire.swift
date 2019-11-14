@@ -88,7 +88,7 @@ extension RequestConvertible where Self : DataRequest {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.underlying(error, request: response.request, response: response.response)
+                let err = HTTPError.external(error, request: response.request, response: response.response)
                 completionHandler(.failure(err))
             }
         }
@@ -140,7 +140,7 @@ extension RequestConvertible where Self : DownloadRequest {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.underlying(error, request: response.request, response: response.response)
+                let err = HTTPError.external(error, request: response.request, response: response.response)
                 completionHandler(.failure(err))
             }
         }
@@ -194,7 +194,7 @@ struct ResponseSerializer : ResponseSerializerProtocol {
             case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
                 throw HTTPError.connectionLost(request: request, response: response)
             default:
-                throw err
+                throw HTTPError.external(err, request: request, response: response)
             }
         }
 

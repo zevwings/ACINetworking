@@ -44,12 +44,23 @@ extension Paginator {
     mutating func transform(_ data: Data) throws -> Data {
 
         let options: JSONSerialization.ReadingOptions = [.allowFragments, .mutableLeaves, .mutableContainers]
-        if let model = try JSONSerialization.jsonObject(with: data, options: options) as? NSDictionary,
-            let elements = model.value(forKeyPath: elementKey) as? [[String: Any]] {
+        
+        let jsonObject: NSDictionary?
+        do {
+            jsonObject = try JSONSerialization.jsonObject(with: data, options: options) as? NSDictionary
+        } catch {
+            throw HTTPError.external(error, request: nil, response: nil)
+        }
+        
+        if let model = jsonObject, let elements = model.value(forKeyPath: elementKey) as? [[String: Any]] {
             if elements.count >= count {
                 index += 1
             }
-            return try JSONSerialization.data(withJSONObject: elements, options: .prettyPrinted)
+            do {
+                return try JSONSerialization.data(withJSONObject: elements, options: .prettyPrinted)
+            } catch {
+                throw HTTPError.external(error, request: nil, response: nil)
+            }
         }
         return data
     }

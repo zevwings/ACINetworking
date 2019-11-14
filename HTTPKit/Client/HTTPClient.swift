@@ -40,7 +40,10 @@ public final class HTTPClient<R: Request> : Client {
         do {
             let constructor = try Constructor(request: request)
             alamofireRequest = try constructor.process(with: session, plugins: plugins)
-        } catch {
+        } catch let error as HTTPError {
+            completionHandler(.failure(error))
+            return nil
+        } catch let error {
             completionHandler(.failure(HTTPError.underlying(error, request: nil, response: nil)))
             return nil
         }
@@ -76,18 +79,21 @@ public final class HTTPClient<R: Request> : Client {
             case .success(let response):
                 do {
                     var response = response
-                    /// 通过插件和拦截器处理返回结果
+                    // 通过插件和拦截器处理返回结果
                     response = try self.plugins.reduce(response) { try $1.intercept(response: $0) }
                     if let interceptor = request.interceptor {
+                        // 错误类型：自定义错误
                         response = try interceptor.intercept(response: response)
                     }
                     var data = response.data
-                    /// 通过`Transformer`对返回数据进行数据处理
+                    // 通过`Transformer`对返回数据进行数据处理
                     if let transformer = request.transformer {
+                        // 错误类型：自定义错误
                         data = try transformer.transform(data)
                     }
-                    /// 当`Request`实现`RequestPaginator`协议时，进行分页相关操作并对数据进行转换
+                    // 当`Request`实现`RequestPaginator`协议时，进行分页相关操作并对数据进行转换
                     if var paginator = request.paginator {
+                        // 错误类型：HTTP.external
                         data = try paginator.transform(data)
                     }
 
@@ -99,6 +105,8 @@ public final class HTTPClient<R: Request> : Client {
                     }
 
                     completionHandler(.success(response))
+                } catch let error as HTTPError {
+                    completionHandler(.failure(error))
                 } catch let error {
                     let err = HTTPError.underlying(error, request: response.request, response: response.response)
                     completionHandler(.failure(err))

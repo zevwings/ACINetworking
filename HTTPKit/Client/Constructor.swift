@@ -63,7 +63,7 @@ class Constructor<R: Request> {
         _ urlRequest: URLRequest,
         session: Session,
         plugins: [PluginType]
-    ) throws -> Requestable {
+    ) -> Requestable {
 
         /// 生成Alamofire拦截器
         var plugins: [PluginType] = plugins
@@ -106,6 +106,7 @@ class Constructor<R: Request> {
     ) throws -> Requestable {
 
         /// 通过插件和拦截器处理请求参数
+        /// 错误类型：自定义错误
         parameters = try plugins.reduce(parameters) { try $1.intercept(paramters: $0) }
         if let interceptor = request.interceptor {
             parameters = try interceptor.intercept(paramters: parameters)
@@ -118,9 +119,11 @@ class Constructor<R: Request> {
             parameters?[paginator.indexKey] = paginator.index
         }
 
+        /// 错误类型：HTTPError.encode
         var urlRequest = try buildUrlRequest()
 
         /// 通过插件和拦截器处理网络请求
+        /// 错误类型：自定义错误
         urlRequest = try plugins.reduce(urlRequest) { try $1.intercept(urlRequest: $0) }
         if let interceptor = request.interceptor {
             urlRequest = try interceptor.intercept(urlRequest: urlRequest)
@@ -132,7 +135,7 @@ class Constructor<R: Request> {
             interceptor.willSend(urlRequest, request: request)
         }
 
-        return try buildAlamofireRequest(urlRequest, session: session, plugins: plugins)
+        return buildAlamofireRequest(urlRequest, session: session, plugins: plugins)
     }
 }
 

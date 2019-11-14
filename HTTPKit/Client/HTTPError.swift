@@ -30,6 +30,9 @@ public enum HTTPError : Error {
     /// 网络链接错误
     case connectionLost(request: URLRequest?, response: HTTPURLResponse?)
 
+    /// 外部错误，系统错误或者AF底层错误
+    case external(Swift.Error, request: URLRequest?, response: HTTPURLResponse?)
+    
     /// 综合网络错误
     case underlying(Swift.Error, request: URLRequest?, response: HTTPURLResponse?)
 
@@ -47,6 +50,8 @@ extension HTTPError : LocalizedError {
             return "网络请求超时\n请检查网络是否正常"
         case .connectionLost:
             return "网络链接错误\n请检查网络是否正常"
+        case .external:
+            return "网络错误"
         case .underlying(let error, _, _):
             return errorHandler(error: error, defaultMessage: "网络错误")
         }
@@ -115,6 +120,15 @@ extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
             ============================================================
             网络连接失败，请检查网络是否正常
             请求路径: \(request?.url?.relativeString ?? "")
+            ============================================================
+            """
+        case .external(let error, let request, let response):
+            return """
+            ============================================================
+            网络请求错误，请检查
+            请求路径: \(request?.url?.relativeString ?? "")
+            请求路径: \(response?.description ?? "")
+            错误原因: \(error)
             ============================================================
             """
         case .underlying(let error, let request, _):
