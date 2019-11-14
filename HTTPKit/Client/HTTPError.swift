@@ -154,6 +154,8 @@ extension HTTPError {
         switch self {
         case .underlying(let error, _, _):
             return error
+        case .external(let error, _, _):
+            return error
         default:
             return self
         }
