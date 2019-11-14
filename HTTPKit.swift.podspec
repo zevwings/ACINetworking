@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
   spec.name           = "HTTPKit.swift"
   spec.module_name    = "HTTPKit"
-  spec.version        = "1.0.1"
+  spec.version        = "1.0.2"
   spec.summary        = "A network layer base on Alamofire."
   spec.swift_version  = "5.1"
 

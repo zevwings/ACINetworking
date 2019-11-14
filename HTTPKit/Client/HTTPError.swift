@@ -32,7 +32,7 @@ public enum HTTPError : Error {
 
     /// 外部错误，系统错误或者AF底层错误
     case external(Swift.Error, request: URLRequest?, response: HTTPURLResponse?)
-    
+
     /// 综合网络错误
     case underlying(Swift.Error, request: URLRequest?, response: HTTPURLResponse?)
 
