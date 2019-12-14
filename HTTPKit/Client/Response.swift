@@ -105,6 +105,23 @@ public extension Response {
             return string
         }
     }
+
+    func mapObject<C: Codable>(
+        to type: C.Type,
+        decoder: JSONDecoder = JSONDecoder(),
+        atKeyPath keyPath: String? = nil
+    ) throws -> C {
+        if let keyPath = keyPath {
+            guard let jsonDictionary = try mapJSON() as? NSDictionary,
+                let jsonObject = jsonDictionary.value(forKeyPath: keyPath) else {
+                    throw HTTPError.cast(value: data, targetType: C.self)
+            }
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+            return try decoder.decode(type, from: jsonData)
+        } else {
+            return try decoder.decode(type, from: data)
+        }
+    }
 }
 
 public struct ProgressResponse {

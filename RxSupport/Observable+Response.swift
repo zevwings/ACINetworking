@@ -40,6 +40,14 @@ public extension ObservableType where Element == Response {
     func mapString(atKeyPath keyPath: String? = nil) -> Observable<String> {
         return flatMap { Observable.just(try $0.mapString(atKeyPath: keyPath)) }
     }
+
+    func mapObject<C: Codable>(
+        to type: C.Type,
+        decoder: JSONDecoder = JSONDecoder(),
+        atKeyPath keyPath: String? = nil
+    ) -> Observable<C> {
+        return flatMap { Observable.just(try $0.mapObject(to: type, decoder: decoder, atKeyPath: keyPath)) }
+    }
 }
 
 public extension ObservableType where Element == ProgressResponse {
