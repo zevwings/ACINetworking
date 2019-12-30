@@ -20,6 +20,10 @@ public protocol Client : AnyObject {
     ///   - progressHandler: 进度回调
     ///   - completionHandler: 进度回调
     /// - Returns: 请求任务
-    // swiftlint:disable:next line_length
-    func request(request: R, callbackQueue: DispatchQueue, progressHandler: ((ProgressResponse) -> Void)?, completionHandler: @escaping (Result<Response, HTTPError>) -> Void) -> Task?
+    func request(
+        request: R,
+        callbackQueue: DispatchQueue,
+        progressHandler: ((ProgressResponse) -> Void)?,
+        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
+    ) -> Task?
 }

@@ -51,7 +51,7 @@ extension HTTPError : LocalizedError {
         case .connectionLost:
             return "网络链接错误\n请检查网络是否正常"
         case .external:
-            return "网络错误"
+            return "网络请求失败"
         case .underlying(let error, _, _):
             return errorHandler(error: error, defaultMessage: "网络错误")
         }

@@ -60,8 +60,10 @@ public final class HTTPClient<R: Request> : Client {
             }
         }
 
-        alamofireRequest = alamofireRequest.progress(queue: callbackQueue,
-                                                     progressHandler: internalProgressHandler)
+        alamofireRequest = alamofireRequest.progress(
+            queue: callbackQueue,
+            progressHandler: internalProgressHandler
+        )
 
         let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
 
@@ -116,8 +118,10 @@ public final class HTTPClient<R: Request> : Client {
             }
         }
 
-        alamofireRequest = alamofireRequest.response(queue: callbackQueue,
-                                                     completionHandler: internalCompletionHandler)
+        alamofireRequest = alamofireRequest.response(
+            queue: callbackQueue,
+            completionHandler: internalCompletionHandler
+        )
 
         let task = HTTPTask(request: alamofireRequest)
         task.resume()

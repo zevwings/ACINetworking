@@ -21,12 +21,14 @@ extension HTTPClient {
         let rootQueue = DispatchQueue(label: "com.zevwings.httpkit.rootQueue")
         let requestQueue = DispatchQueue(label: "com.zevwings.httpkit.requestQueue", target: rootQueue)
         let serializationQueue = DispatchQueue(label: "com.zevwings.httpkit.serializationQueue", target: rootQueue)
-        let session = Session(configuration: configuration,
-                              delegate: delegate,
-                              rootQueue: rootQueue,
-                              startRequestsImmediately: false,
-                              requestQueue: requestQueue,
-                              serializationQueue: serializationQueue)
+        let session = Session(
+            configuration: configuration,
+            delegate: delegate,
+            rootQueue: rootQueue,
+            startRequestsImmediately: false,
+            requestQueue: requestQueue,
+            serializationQueue: serializationQueue
+        )
         return session
     }
 }

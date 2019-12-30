@@ -111,15 +111,24 @@ public extension Response {
         decoder: JSONDecoder = JSONDecoder(),
         atKeyPath keyPath: String? = nil
     ) throws -> C {
-        if let keyPath = keyPath {
-            guard let jsonDictionary = try mapJSON() as? NSDictionary,
-                let jsonObject = jsonDictionary.value(forKeyPath: keyPath) else {
-                    throw HTTPError.cast(value: data, targetType: C.self)
+
+        do {
+            var value: C
+            if let keyPath = keyPath {
+                guard let jsonDictionary = try mapJSON() as? NSDictionary,
+                    let jsonObject = jsonDictionary.value(forKeyPath: keyPath) else {
+                        throw HTTPError.cast(value: data, targetType: C.self)
+                }
+                let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                value = try decoder.decode(type, from: jsonData)
+            } else {
+                value = try decoder.decode(type, from: data)
             }
-            let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
-            return try decoder.decode(type, from: jsonData)
-        } else {
-            return try decoder.decode(type, from: data)
+
+            return value
+        } catch {
+            print("Error \(error)")
+            throw HTTPError.cast(value: data, targetType: type)
         }
     }
 }

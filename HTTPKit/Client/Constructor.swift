@@ -89,9 +89,11 @@ class Constructor<R: Request> {
             let multipartFormData: (RequestMultipartFormData) -> Void = { formData in
                 formData.applyMoyaMultipartFormData(mutipartFormData)
             }
-            alamofireRequest = session.upload(multipartFormData: multipartFormData,
-                                              with: urlRequest,
-                                              interceptor: interceptor)
+            alamofireRequest = session.upload(
+                multipartFormData: multipartFormData,
+                with: urlRequest,
+                interceptor: interceptor
+            )
         }
 
         return validateStatusCode.isEmpty ?

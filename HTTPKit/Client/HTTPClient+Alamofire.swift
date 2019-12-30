@@ -93,9 +93,11 @@ extension RequestConvertible where Self : DataRequest {
             }
         }
 
-        return response(queue: queue,
-                        responseSerializer: ResponseSerializer(),
-                        completionHandler: internalCompletionHandler)
+        return response(
+            queue: queue,
+            responseSerializer: ResponseSerializer(),
+            completionHandler: internalCompletionHandler
+        )
     }
 }
 
@@ -145,9 +147,11 @@ extension RequestConvertible where Self : DownloadRequest {
             }
         }
 
-        return response(queue: queue,
-                        responseSerializer: ResponseSerializer(),
-                        completionHandler: internalCompletionHandler)
+        return response(
+            queue: queue,
+            responseSerializer: ResponseSerializer(),
+            completionHandler: internalCompletionHandler
+        )
     }
 }
 
