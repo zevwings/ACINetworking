@@ -124,6 +124,14 @@
 			name = Support;
 			sourceTree = "<group>";
 		};
+		4D9669E723BADDE7000BF35C /* Paginator */ = {
+			isa = PBXGroup;
+			children = (
+				4DD229FB23279E4B00F1303E /* Paginator.swift */,
+			);
+			path = Paginator;
+			sourceTree = "<group>";
+		};
 		4DD229C923279D9C00F1303E = {
 			isa = PBXGroup;
 			children = (
@@ -152,6 +160,7 @@
 				4DD22A0123279E4B00F1303E /* Client */,
 				4DD22A0C23279E4B00F1303E /* Service */,
 				4DD229F823279E4B00F1303E /* Request */,
+				4D9669E723BADDE7000BF35C /* Paginator */,
 				4DD22A0E23279E4B00F1303E /* Transformer */,
 				4DD229F423279E4B00F1303E /* Plugin */,
 			);
@@ -174,7 +183,6 @@
 				4DD22A0023279E4B00F1303E /* Route.swift */,
 				4DD229F923279E4B00F1303E /* MultipartFormData.swift */,
 				4DD229FA23279E4B00F1303E /* ValidationType.swift */,
-				4DD229FB23279E4B00F1303E /* Paginator.swift */,
 			);
 			path = Request;
 			sourceTree = "<group>";

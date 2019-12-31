@@ -36,10 +36,10 @@ public final class HTTPClient<R: Request> : Client {
         completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> Task? {
 
-        var alamofireRequest: Requestable
+        var alamoRequest: Requestable
         do {
             let constructor = try Constructor(request: request)
-            alamofireRequest = try constructor.process(with: session, plugins: plugins)
+            alamoRequest = try constructor.process(with: session, plugins: plugins)
         } catch let error as HTTPError {
             completionHandler(.failure(error))
             return nil
@@ -60,7 +60,7 @@ public final class HTTPClient<R: Request> : Client {
             }
         }
 
-        alamofireRequest = alamofireRequest.progress(
+        alamoRequest = alamoRequest.progress(
             queue: callbackQueue,
             progressHandler: internalProgressHandler
         )
@@ -74,7 +74,7 @@ public final class HTTPClient<R: Request> : Client {
 
             if let progressHandler = progressHandler {
                 let value = try? result.get()
-                progressHandler(ProgressResponse(progress: alamofireRequest.executeProgress, response: value))
+                progressHandler(ProgressResponse(progress: alamoRequest.executeProgress, response: value))
             }
 
             switch result {
@@ -94,14 +94,14 @@ public final class HTTPClient<R: Request> : Client {
                         data = try transformer.transform(data)
                     }
                     // 当`Request`实现`RequestPaginator`协议时，进行分页相关操作并对数据进行转换
-                    if var paginator = request.paginator {
+                    if let paginator = request.paginator {
                         // 错误类型：HTTP.external
-                        data = try paginator.transform(data)
+                        data = try paginator.updateIndex(data)
                     }
 
                     response.update(data)
 
-                    self.plugins.forEach { $0.didComplete(.success(response), request: request) }
+                     self.plugins.forEach { $0.didComplete(.success(response), request: request) }
                     if let interceptor = request.interceptor {
                         interceptor.didComplete(.success(response), request: request)
                     }
@@ -118,12 +118,12 @@ public final class HTTPClient<R: Request> : Client {
             }
         }
 
-        alamofireRequest = alamofireRequest.response(
+        alamoRequest = alamoRequest.response(
             queue: callbackQueue,
             completionHandler: internalCompletionHandler
         )
 
-        let task = HTTPTask(request: alamofireRequest)
+        let task = HTTPTask(request: alamoRequest)
         task.resume()
         return task
     }
