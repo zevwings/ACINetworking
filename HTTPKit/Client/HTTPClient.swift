@@ -115,9 +115,11 @@ public final class HTTPClient<R: Request> : Client {
 
                     completionHandler(.success(response))
                 } catch let error as HTTPError {
+                    self.logVerbose(isHTTPError: true, constructor, error: error)
                     completionHandler(.failure(error))
                 } catch let error {
                     let err = HTTPError.underlying(error, request: response.request, response: response.response)
+                    self.logVerbose(isHTTPError: false, constructor, error: err)
                     completionHandler(.failure(err))
                 }
             case .failure(let error):
@@ -168,6 +170,25 @@ extension HTTPClient {
                 parameters: \(constructor.parameters ?? [:])
                 headerFields: \(constructor.headerFields ?? [:])
                 error: \(error)
+                ============================================================
+                """
+            )
+        }
+    }
+
+    private func logVerbose(isHTTPError: Bool, _ constructor: Constructor<R>, error: Error) {
+
+        if isHTTPError {
+            HTTPKit.logVerbose(String(describing: error))
+        } else {
+            HTTPKit.logVerbose(
+                """
+                ============================================================
+                数据转换或者插件错误
+                url : \(constructor.url)
+                parameters: \(constructor.parameters ?? [:])
+                headerFields: \(constructor.headerFields ?? [:])
+                error : \(error.localizedDescription)
                 ============================================================
                 """
             )
