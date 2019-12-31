@@ -9,15 +9,15 @@ import Foundation
 
 public final class HTTPClient<R: Request> : Client {
 
-    let session: Session
+    let manager: SessionManager
     let plugins: [PluginType]
 
     /// 初始化方法
     public init(
-        session: Session = HTTPClient.defaultSession(),
+        manager: SessionManager = HTTPClient.defaultSessionManager(),
         plugins: [PluginType] = []
     ) {
-        self.session = session
+        self.manager = manager
         self.plugins = plugins
     }
 
@@ -36,10 +36,14 @@ public final class HTTPClient<R: Request> : Client {
         completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> Task? {
 
+        /// 设置重试
+        manager.retrier = request.retrier
+
+        /// 构建Alamofire请求
         var alamoRequest: Requestable
         do {
             let constructor = try Constructor(request: request)
-            alamoRequest = try constructor.process(with: session, plugins: plugins)
+            alamoRequest = try constructor.process(with: manager, plugins: plugins)
         } catch let error as HTTPError {
             completionHandler(.failure(error))
             return nil

@@ -10,25 +10,22 @@ import Foundation
 extension HTTPClient {
 
     /// 默认的Alamofire.Session
-    public class func defaultSession() -> Session {
+    public class func defaultSessionManager() -> SessionManager {
 
         let configuration = URLSessionConfiguration.default
-        configuration.headers = HTTPHeaders.default
+        configuration.httpAdditionalHeaders = SessionManager.defaultHTTPHeaders
         configuration.timeoutIntervalForRequest = 30.0
         configuration.timeoutIntervalForResource = 30.0
 
         let delegate = SessionDelegate()
-        let rootQueue = DispatchQueue(label: "com.zevwings.httpkit.rootQueue")
-        let requestQueue = DispatchQueue(label: "com.zevwings.httpkit.requestQueue", target: rootQueue)
-        let serializationQueue = DispatchQueue(label: "com.zevwings.httpkit.serializationQueue", target: rootQueue)
-        let session = Session(
+//        let rootQueue = DispatchQueue(label: "com.zevwings.httpkit.rootQueue")
+//        let requestQueue = DispatchQueue(label: "com.zevwings.httpkit.requestQueue", target: rootQueue)
+//        let serializationQueue = DispatchQueue(label: "com.zevwings.httpkit.serializationQueue", target: rootQueue)
+
+        return SessionManager(
             configuration: configuration,
             delegate: delegate,
-            rootQueue: rootQueue,
-            startRequestsImmediately: false,
-            requestQueue: requestQueue,
-            serializationQueue: serializationQueue
+            serverTrustPolicyManager: nil
         )
-        return session
     }
 }

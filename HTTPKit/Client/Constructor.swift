@@ -39,71 +39,9 @@ class Constructor<R: Request> {
         self.validateStatusCode = request.validationType.statusCodes
     }
 
-    /// 构建一个`UrlRequest`
-    func buildUrlRequest() throws -> URLRequest {
-
-        var urlRequest = URLRequest(url: url)
-        urlRequest.httpMethod = method.rawValue
-
-        headerFields?.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
-
-        if let encoding = encoding {
-            do {
-                urlRequest = try encoding.encode(urlRequest, with: parameters)
-            } catch {
-                throw HTTPError.encode(parameters: parameters, encoding: encoding, error: error)
-            }
-        }
-
-        return urlRequest
-    }
-
-    /// 从`URLRequest`构建对应的`Alamofire.Request`
-    func buildAlamofireRequest(
-        _ urlRequest: URLRequest,
-        session: Session,
-        plugins: [PluginType]
-    ) -> Requestable {
-
-        /// 生成Alamofire拦截器
-        var plugins: [PluginType] = plugins
-        if let interceptor = request.interceptor {
-            plugins.append(interceptor)
-        }
-
-        let retrier = Retrier(plugins)
-        let interceptor: Alamofire.Interceptor? = plugins.isEmpty ?
-            nil :
-            Alamofire.Interceptor(adapters: [], retriers: [retrier])
-
-        /// 生成请求
-        var alamofireRequest: Requestable
-        switch content {
-        case .requestPlain, .requestParameters:
-            alamofireRequest = session.request(urlRequest, interceptor: interceptor)
-        case .download(let destination), .downloadParameters(_, _, let destination):
-            alamofireRequest =  session.download(urlRequest, interceptor: interceptor, to: destination)
-        case .uploadFile(let fileURL):
-            alamofireRequest =  session.upload(fileURL, with: urlRequest, interceptor: interceptor)
-        case .uploadFormData(let mutipartFormData), .uploadFormDataParameters(_, _, let mutipartFormData):
-            let multipartFormData: (RequestMultipartFormData) -> Void = { formData in
-                formData.applyMoyaMultipartFormData(mutipartFormData)
-            }
-            alamofireRequest = session.upload(
-                multipartFormData: multipartFormData,
-                with: urlRequest,
-                interceptor: interceptor
-            )
-        }
-
-        return validateStatusCode.isEmpty ?
-            alamofireRequest :
-            alamofireRequest.validate(statusCode: validateStatusCode)
-    }
-
     /// 处理`Request`，将`Request`处理构建成一个`Alamofire.Request`
     func process(
-        with session: Session,
+        with manager: SessionManager,
         plugins: [PluginType]
     ) throws -> Requestable {
 
@@ -137,26 +75,71 @@ class Constructor<R: Request> {
             interceptor.willSend(urlRequest, request: request)
         }
 
-        return buildAlamofireRequest(urlRequest, session: session, plugins: plugins)
-    }
-}
-
-// MARK: -
-
-public struct Retrier: RequestRetrier {
-
-    let plugins: [PluginType]
-
-    init (_ plugins: [PluginType]) {
-        self.plugins = plugins
+        return try buildAlamoRequest(urlRequest, manager: manager, plugins: plugins)
     }
 
-    public func retry(
-        _ request: Alamofire.Request,
-        for session: Session,
-        dueTo error: Error,
-        completion: @escaping (RetryResult) -> Void
-    ) {
-        plugins.forEach { $0.retry(error, completion: completion) }
+    /// 构建一个`UrlRequest`
+    private func buildUrlRequest() throws -> URLRequest {
+
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = method.rawValue
+
+        headerFields?.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
+
+        if let encoding = encoding {
+            do {
+                urlRequest = try encoding.encode(urlRequest, with: parameters)
+            } catch {
+                throw HTTPError.encode(parameters: parameters, encoding: encoding, error: error)
+            }
+        }
+
+        return urlRequest
+    }
+
+    /// 从`URLRequest`构建对应的`Alamofire.Request`
+    private func buildAlamoRequest(
+        _ urlRequest: URLRequest,
+        manager: SessionManager,
+        plugins: [PluginType]
+    ) throws -> Requestable {
+
+        /// 生成Alamofire拦截器
+        var plugins: [PluginType] = plugins
+        if let interceptor = request.interceptor {
+            plugins.append(interceptor)
+        }
+
+        /// 生成请求
+        var alamoRequest: Requestable?
+        var error: Error?
+        switch content {
+        case .requestPlain, .requestParameters:
+            alamoRequest = manager.request(urlRequest)
+        case .download(let destination), .downloadParameters(_, _, let destination):
+            alamoRequest = manager.download(urlRequest, to: destination)
+        case .uploadFile(let fileURL):
+            alamoRequest = manager.upload(fileURL, with: urlRequest)
+        case .uploadFormData(let mutipartFormData), .uploadFormDataParameters(_, _, let mutipartFormData):
+            let multipartFormData: (RequestMultipartFormData) -> Void = { formData in
+                formData.applyMoyaMultipartFormData(mutipartFormData)
+            }
+            manager.upload(multipartFormData: multipartFormData, with: urlRequest, encodingCompletion: { result in
+                switch result {
+                case .success(let request, _, _):
+                    alamoRequest = request
+                case .failure(let err):
+                    alamoRequest = nil
+                    error = err
+                }
+            })
+        }
+        if let alamoRequest = alamoRequest {
+            return validateStatusCode.isEmpty ?
+                alamoRequest :
+                alamoRequest.validate(statusCode: validateStatusCode)
+        } else {
+            throw HTTPError.external(error!, request: urlRequest, response: nil)
+        }
     }
 }

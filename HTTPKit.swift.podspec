@@ -25,7 +25,7 @@ Pod::Spec.new do |spec|
 
   spec.subspec "Core" do |core|
     core.source_files = "HTTPKit/HTTPKit.h", "HTTPKit/**/*.swift"
-    core.dependency "Alamofire", "~> 5.0.0-rc.2"
+    core.dependency "Alamofire"
   end
 
   spec.subspec "RxSwift" do |rx|
