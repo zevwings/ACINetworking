@@ -56,7 +56,9 @@ public extension Response {
 
     func filter<R: RangeExpression>(statusCodes: R) throws -> Response where R.Bound == Int {
         guard statusCodes.contains(statusCode) else {
-            throw HTTPError.statusCode(request: request, statustCode: statusCode)
+            let error = HTTPError.statusCode(request: request, statustCode: statusCode)
+            logVerbose(isFailure: true, value: nil, error: error)
+            throw error
         }
         return self
     }
@@ -75,33 +77,53 @@ public extension Response {
 
     func mapImage() throws -> Image {
         guard let image = Image(data: data) else {
-            throw HTTPError.cast(value: data, targetType: Image.self)
+            let error = HTTPError.cast(value: data, targetType: Image.self)
+            logVerbose(isFailure: true, value: nil, error: error)
+            throw error
         }
+        logVerbose(isFailure: false, value: image, error: nil)
         return image
     }
 
-    func mapJSON(failsOnEmptyData: Bool = true) throws -> Any {
+    func mapJSON(
+        options: JSONSerialization.ReadingOptions = [.allowFragments],
+        failsOnEmptyData: Bool = true
+    ) throws -> Any {
         do {
-            return try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: options)
+            logVerbose(isFailure: false, value: jsonObject, error: nil)
+            return jsonObject
         } catch {
             if data.count < 1 && !failsOnEmptyData {
                 return NSNull()
             }
-            throw HTTPError.cast(value: data, targetType: Any.self)
+            let error = HTTPError.cast(value: data, targetType: Any.self)
+            logVerbose(isFailure: true, value: nil, error: error)
+            throw error
         }
     }
 
     func mapString(atKeyPath keyPath: String? = nil) throws -> String {
         if let keyPath = keyPath {
-            guard let jsonDictionary = try mapJSON() as? NSDictionary,
-                let string = jsonDictionary.value(forKeyPath: keyPath) as? String else {
-                    throw HTTPError.cast(value: data, targetType: String.self)
+            guard
+                let jsonDictionary = try mapJSON() as? NSDictionary,
+                let string = jsonDictionary.value(forKeyPath: keyPath) as? String
+                else {
+                    let error = HTTPError.cast(value: data, targetType: String.self)
+                    logVerbose(isFailure: true, value: nil, error: error)
+                    throw error
             }
+            logVerbose(isFailure: false, value: string, error: nil)
             return string
         } else {
-            guard let string = String(data: data, encoding: .utf8) else {
-                throw HTTPError.cast(value: data, targetType: String.self)
+            guard
+                let string = String(data: data, encoding: .utf8)
+                else {
+                    let error = HTTPError.cast(value: data, targetType: String.self)
+                    logVerbose(isFailure: true, value: nil, error: error)
+                    throw error
             }
+            logVerbose(isFailure: false, value: string, error: nil)
             return string
         }
     }
@@ -111,24 +133,47 @@ public extension Response {
         decoder: JSONDecoder = JSONDecoder(),
         atKeyPath keyPath: String? = nil
     ) throws -> C {
-
         do {
             var value: C
             if let keyPath = keyPath {
-                guard let jsonDictionary = try mapJSON() as? NSDictionary,
-                    let jsonObject = jsonDictionary.value(forKeyPath: keyPath) else {
-                        throw HTTPError.cast(value: data, targetType: C.self)
+                guard
+                    let jsonDictionary = try mapJSON() as? NSDictionary,
+                    let jsonObject = jsonDictionary.value(forKeyPath: keyPath)
+                    else {
+                        let error = HTTPError.cast(value: data, targetType: type)
+                        logVerbose(isFailure: true, value: nil, error: error)
+                        throw error
                 }
                 let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
                 value = try decoder.decode(type, from: jsonData)
             } else {
                 value = try decoder.decode(type, from: data)
             }
-
+            logVerbose(isFailure: false, value: value, error: nil)
             return value
         } catch {
-            print("Error \(error)")
-            throw HTTPError.cast(value: data, targetType: type)
+            let error = HTTPError.cast(value: data, targetType: type)
+            logVerbose(isFailure: true, value: nil, error: error)
+            throw error
+        }
+    }
+}
+
+extension Response {
+
+    private func logVerbose(isFailure: Bool, value: Any?, error: Error?) {
+        if let value = value, !isFailure {
+            HTTPKit.logVerbose(
+                """
+                ============================================================
+                "数据解析成功"
+                url : \( request?.url?.relativeString ?? "")
+                response: \(value)
+                ============================================================
+                """
+            )
+        } else {
+            HTTPKit.logVerbose(String(describing: error?.localizedDescription))
         }
     }
 }

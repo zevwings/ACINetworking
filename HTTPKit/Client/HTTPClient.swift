@@ -41,8 +41,9 @@ public final class HTTPClient<R: Request> : Client {
 
         /// 构建Alamofire请求
         var alamoRequest: Requestable
+        let constructor: Constructor<R>
         do {
-            let constructor = try Constructor(request: request)
+            constructor = try Constructor(request: request)
             alamoRequest = try constructor.process(with: manager, plugins: plugins)
         } catch let error as HTTPError {
             completionHandler(.failure(error))
@@ -70,6 +71,8 @@ public final class HTTPClient<R: Request> : Client {
         )
 
         let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
+
+            self.logDebug(constructor, result: result)
 
             self.plugins.forEach { $0.didReceive(result, request: request) }
             if let interceptor = request.interceptor {
@@ -130,5 +133,44 @@ public final class HTTPClient<R: Request> : Client {
         let task = HTTPTask(request: alamoRequest)
         task.resume()
         return task
+    }
+}
+
+// MARK: - Logger
+
+extension HTTPClient {
+
+    private func logDebug(_ constructor: Constructor<R>, result: Result<Response, HTTPError>) {
+
+        switch result {
+        case .success(let response):
+            do {
+                HTTPKit.logDebug(
+                    """
+                    ============================================================
+                    网络请求成功
+                    url : \(constructor.url)
+                    parameters: \(constructor.parameters ?? [:])
+                    headerFields: \(constructor.headerFields ?? [:])
+                    response: \(try response.mapJSON())
+                    ============================================================
+                    """
+                )
+            } catch {
+
+            }
+        case .failure(let error):
+            HTTPKit.logDebug(
+                """
+                ============================================================
+                网络请求失败
+                url : \(constructor.url)
+                parameters: \(constructor.parameters ?? [:])
+                headerFields: \(constructor.headerFields ?? [:])
+                error: \(error)
+                ============================================================
+                """
+            )
+        }
     }
 }

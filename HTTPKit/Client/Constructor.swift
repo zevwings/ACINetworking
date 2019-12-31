@@ -86,6 +86,17 @@ class Constructor<R: Request> {
 
         headerFields?.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
 
+        HTTPKit.logDebug(
+            """
+            ============================================================
+            发起网络请求
+            url : \(url)
+            parameters: \(parameters ?? [:])
+            headerFields: \(headerFields ?? [:])
+            ============================================================
+            """
+        )
+
         if let encoding = encoding {
             do {
                 urlRequest = try encoding.encode(urlRequest, with: parameters)
@@ -134,11 +145,24 @@ class Constructor<R: Request> {
                 }
             })
         }
+
         if let alamoRequest = alamoRequest {
             return validateStatusCode.isEmpty ?
                 alamoRequest :
                 alamoRequest.validate(statusCode: validateStatusCode)
         } else {
+
+            HTTPKit.logVerbose(
+                """
+                ============================================================
+                构建网络请求失败
+                url : \(url)
+                parameters: \(parameters ?? [:])
+                headerFields: \(headerFields ?? [:])
+                ============================================================
+                """
+            )
+
             throw HTTPError.external(error!, request: urlRequest, response: nil)
         }
     }

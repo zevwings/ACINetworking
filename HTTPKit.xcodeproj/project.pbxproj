@@ -12,6 +12,7 @@
 		4D8397E4232A94E0005C7CE8 /* Single+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793823289E4B0002323E /* Single+Response.swift */; };
 		4D8397E5232A94E0005C7CE8 /* Observable+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793623289E3C0002323E /* Observable+Response.swift */; };
 		4D8397EB232B1C50005C7CE8 /* HTTPKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD229D323279D9C00F1303E /* HTTPKit.framework */; };
+		4D9669F023BB4A37000BF35C /* HTTPKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9669EF23BB4A37000BF35C /* HTTPKit.swift */; };
 		4DCE97AB23349A5000A28338 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97AA23349A5000A28338 /* Alamofire.framework */; };
 		4DCE97BA2334A1CB00A28338 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97B92334A1CB00A28338 /* RxSwift.framework */; };
 		4DCE97BB2334A1CB00A28338 /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97B92334A1CB00A28338 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -56,6 +57,7 @@
 		4D8397E7232A951E005C7CE8 /* HTTPKit.swift.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HTTPKit.swift.podspec; sourceTree = "<group>"; };
 		4D89793623289E3C0002323E /* Observable+Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Observable+Response.swift"; sourceTree = "<group>"; };
 		4D89793823289E4B0002323E /* Single+Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Single+Response.swift"; sourceTree = "<group>"; };
+		4D9669EF23BB4A37000BF35C /* HTTPKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPKit.swift; sourceTree = "<group>"; };
 		4DCE97AA23349A5000A28338 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		4DCE97B92334A1CB00A28338 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		4DCE97BD2334A1ED00A28338 /* HandyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HandyJSON.framework; path = Carthage/Build/iOS/HandyJSON.framework; sourceTree = "<group>"; };
@@ -132,6 +134,14 @@
 			path = Paginator;
 			sourceTree = "<group>";
 		};
+		4D9669EE23BB4A28000BF35C /* Configration */ = {
+			isa = PBXGroup;
+			children = (
+				4D9669EF23BB4A37000BF35C /* HTTPKit.swift */,
+			);
+			path = Configration;
+			sourceTree = "<group>";
+		};
 		4DD229C923279D9C00F1303E = {
 			isa = PBXGroup;
 			children = (
@@ -157,6 +167,7 @@
 			children = (
 				4DD229D623279D9C00F1303E /* HTTPKit.h */,
 				4DD229D723279D9C00F1303E /* Info.plist */,
+				4D9669EE23BB4A28000BF35C /* Configration */,
 				4DD22A0123279E4B00F1303E /* Client */,
 				4DD22A0C23279E4B00F1303E /* Service */,
 				4DD229F823279E4B00F1303E /* Request */,
@@ -411,6 +422,7 @@
 				4DD22A2023279E4B00F1303E /* Constructor.swift in Sources */,
 				4DD22A1823279E4B00F1303E /* MultipartFormData.swift in Sources */,
 				4DD22A2823279E4B00F1303E /* HTTPClient+Alamofire.swift in Sources */,
+				4D9669F023BB4A37000BF35C /* HTTPKit.swift in Sources */,
 				4DD22A2423279E4B00F1303E /* HTTPClient.swift in Sources */,
 				4DD22A2523279E4B00F1303E /* Response.swift in Sources */,
 				4DD22A1D23279E4B00F1303E /* Request.swift in Sources */,
