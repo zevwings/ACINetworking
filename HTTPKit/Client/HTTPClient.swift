@@ -45,13 +45,23 @@ public final class HTTPClient<R: Request> : Client {
         do {
             constructor = try Constructor(request: request)
             alamoRequest = try constructor.process(with: manager, plugins: plugins)
+            HTTPLogger.success(
+                .debug,
+                title: "🚀🚀准备发起网络请求🚀🚀",
+                urlRequest: constructor.urlRequest
+            )
         } catch let error as HTTPError {
+            HTTPLogger.failure(.verbose, error: error)
             completionHandler(.failure(error))
             return nil
         } catch let error {
-            completionHandler(.failure(HTTPError.underlying(error, request: nil, response: nil)))
+            let err = HTTPError.underlying(error, request: nil, response: nil)
+            HTTPLogger.failure(.verbose, error: err)
+            completionHandler(.failure(err))
             return nil
         }
+
+        /// 处理进度
 
         let internalProgressHandler: InternalProgressHandler = { progress in
             /// 通过插件和拦截器处理请求进度
@@ -70,10 +80,15 @@ public final class HTTPClient<R: Request> : Client {
             progressHandler: internalProgressHandler
         )
 
+        /// 处理返回结果
+
         let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
-
-            self.logDebug(constructor, result: result)
-
+            HTTPLogger.success(
+                .debug,
+                title: "✅✅网络请求成功✅✅",
+                urlRequest: constructor.urlRequest,
+                extra: result
+            )
             self.plugins.forEach { $0.didReceive(result, request: request) }
             if let interceptor = request.interceptor {
                 interceptor.didReceive(result, request: request)
@@ -108,18 +123,18 @@ public final class HTTPClient<R: Request> : Client {
 
                     response.update(data)
 
-                     self.plugins.forEach { $0.didComplete(.success(response), request: request) }
+                    self.plugins.forEach { $0.didComplete(.success(response), request: request) }
                     if let interceptor = request.interceptor {
                         interceptor.didComplete(.success(response), request: request)
                     }
 
                     completionHandler(.success(response))
                 } catch let error as HTTPError {
-                    self.logVerbose(isHTTPError: true, constructor, error: error)
+                    HTTPLogger.failure(.debug, error: error)
                     completionHandler(.failure(error))
                 } catch let error {
                     let err = HTTPError.underlying(error, request: response.request, response: response.response)
-                    self.logVerbose(isHTTPError: false, constructor, error: err)
+                    HTTPLogger.failure(.debug, error: err)
                     completionHandler(.failure(err))
                 }
             case .failure(let error):
@@ -132,66 +147,10 @@ public final class HTTPClient<R: Request> : Client {
             completionHandler: internalCompletionHandler
         )
 
+        /// 生成 Tasks
+
         let task = HTTPTask(request: alamoRequest)
         task.resume()
         return task
-    }
-}
-
-// MARK: - Logger
-
-extension HTTPClient {
-
-    private func logDebug(_ constructor: Constructor<R>, result: Result<Response, HTTPError>) {
-
-        switch result {
-        case .success(let response):
-            do {
-                HTTPKit.logDebug(
-                    """
-                    ============================================================
-                    网络请求成功
-                    url : \(constructor.url)
-                    parameters: \(constructor.parameters ?? [:])
-                    headerFields: \(constructor.headerFields ?? [:])
-                    response: \(try response.mapJSON())
-                    ============================================================
-                    """
-                )
-            } catch {
-
-            }
-        case .failure(let error):
-            HTTPKit.logDebug(
-                """
-                ============================================================
-                网络请求失败
-                url : \(constructor.url)
-                parameters: \(constructor.parameters ?? [:])
-                headerFields: \(constructor.headerFields ?? [:])
-                error: \(error)
-                ============================================================
-                """
-            )
-        }
-    }
-
-    private func logVerbose(isHTTPError: Bool, _ constructor: Constructor<R>, error: Error) {
-
-        if isHTTPError {
-            HTTPKit.logVerbose(String(describing: error))
-        } else {
-            HTTPKit.logVerbose(
-                """
-                ============================================================
-                数据转换或者插件错误
-                url : \(constructor.url)
-                parameters: \(constructor.parameters ?? [:])
-                headerFields: \(constructor.headerFields ?? [:])
-                error : \(error.localizedDescription)
-                ============================================================
-                """
-            )
-        }
     }
 }

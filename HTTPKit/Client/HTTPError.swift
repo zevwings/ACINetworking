@@ -15,6 +15,9 @@ public enum HTTPError : Error {
     /// 解析参数错误
     case encode(parameters: Parameters?, encoding: ParameterEncoding, error: Error)
 
+    /// 构建 Multi-part 网络请求失败
+    case multipart(error: Error?, reqeuest: URLRequest)
+
     /// 服务器返回数据为空
     case emptyResponse(request: URLRequest?, response: HTTPURLResponse?)
 
@@ -22,7 +25,7 @@ public enum HTTPError : Error {
     case statusCode(request: URLRequest?, statustCode: Int)
 
     /// 服务器返回数据不能转换为目标数据类型
-    case cast(value: Any?, targetType: Any.Type)
+    case cast(value: Any?, targetType: Any.Type, request: URLRequest?, response: HTTPURLResponse?)
 
     /// 网络请求操作
     case timeout(request: URLRequest?, response: HTTPURLResponse?)
@@ -42,7 +45,7 @@ extension HTTPError : LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .invalidUrl, .encode:
+        case .invalidUrl, .encode, .multipart:
             return "网络请求失败"
         case .emptyResponse, .cast, .statusCode:
             return "服务器返回错误"
@@ -70,75 +73,26 @@ extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
 
     public var description: String {
         switch self {
-        case .emptyResponse(let request, _):
-            return """
-            ============================================================
-            数据为空或者无法转换为JSON数据类型
-            请求路径: \(request?.url?.relativeString ?? "")
-            ============================================================
-            """
-        case .cast(let value, let targetType):
-            return """
-            ============================================================
-            数据为空或者无法转换为目标数据类型
-            "无法将\(String(describing: value))反序列化为\(targetType)"
-            ============================================================
-            """
-        case .statusCode(let request, let statustCode):
-            return """
-            ============================================================
-            数据为空或者无法转换为目标数据类型
-            请求路径: \(request?.url?.relativeString ?? "")
-            返回状态: \(statustCode)
-            ============================================================
-            """
-        case .invalidUrl(let url, let path):
-            return """
-            ============================================================
-            生成网络请求失败，`baseUrl`或者`path`填写错误 \n
-            请求路径: url: \(url) path:\(path)
-            ============================================================
-            """
-        case .encode(let parameters, let encoding, let error):
-            return """
-            ============================================================
-            网络请求参数解析错误 \n
-            请求参数：\(String(describing: parameters))
-            解码方式：\(encoding)
-            错误原因：\(error)
-            ============================================================
-            """
-        case .timeout(let request, _):
-            return """
-            ============================================================
-            网络请求超时，请检查网络是否正常
-            请求路径: \(request?.url?.relativeString ?? "")
-            ============================================================
-            """
-        case .connectionLost(let request, _):
-            return """
-            ============================================================
-            网络连接失败，请检查网络是否正常
-            请求路径: \(request?.url?.relativeString ?? "")
-            ============================================================
-            """
-        case .external(let error, let request, let response):
-            return """
-            ============================================================
-            网络请求错误，请检查
-            请求路径: \(request?.url?.relativeString ?? "")
-            请求路径: \(response?.description ?? "")
-            错误原因: \(error)
-            ============================================================
-            """
-        case .underlying(let error, let request, _):
-            return """
-            ============================================================
-            网络错误，具体错误信息如下
-            请求路径: \(request?.url?.relativeString ?? "")
-            错误原因: \(error)
-            ============================================================
-            """
+        case .invalidUrl:
+            return "URL不合法"
+        case .encode:
+            return "网络请求参数解析错误"
+        case .multipart:
+            return "无法成功构建Multi-part网络请求"
+        case .emptyResponse:
+            return "数据为空或者无法转换为JSON数据类型"
+        case .cast:
+            return "数据为空或者无法转换为目标数据类型"
+        case .statusCode:
+            return "服务器返回StatusCode不为2xx"
+        case .timeout:
+            return "网络请求超时，请检查网络是否正常"
+        case .connectionLost:
+            return "网络连接失败，请检查网络是否正常"
+        case .external:
+            return "系统错误"
+        case .underlying:
+            return "网络错误，具体错误信息如下"
         }
     }
 
@@ -152,12 +106,51 @@ extension HTTPError {
     /// 获取到真实的Error
     public var error: Error {
         switch self {
+        case .multipart(let error, _):
+            if let error = error {
+                return error
+            } else {
+                return self
+            }
         case .underlying(let error, _, _):
             return error
         case .external(let error, _, _):
             return error
         default:
             return self
+        }
+    }
+
+    public var request: URLRequest? {
+        switch self {
+        case .invalidUrl, .encode:
+            return nil
+        case .multipart(_, let request):
+            return request
+        case .emptyResponse(let request, _):
+            return request
+        case .cast(_, _, let request, _):
+            return request
+        case .statusCode(let request, _):
+            return request
+        case .timeout(let request, _):
+            return request
+        case .connectionLost(let request, _):
+            return request
+        case .external(_, let request, _):
+            return request
+        case .underlying(_, let request, _):
+            return request
+        }
+
+    }
+
+    public var url: String? {
+        switch self {
+        case .invalidUrl(let url, let path):
+            return String(format: "%@ ----> %@", path, url.absoluteString)
+        default:
+            return request?.url?.absoluteString
         }
     }
 }

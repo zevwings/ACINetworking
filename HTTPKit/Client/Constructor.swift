@@ -21,6 +21,7 @@ class Constructor<R: Request> {
 
     var parameters: Parameters?
     var encoding: ParameterEncoding?
+    var urlRequest: URLRequest?
 
     init(request: R) throws {
 
@@ -61,7 +62,7 @@ class Constructor<R: Request> {
 
         /// 错误类型：HTTPError.encode
         var urlRequest = try buildUrlRequest()
-
+        self.urlRequest = urlRequest
         /// 通过插件和拦截器处理网络请求
         /// 错误类型：自定义错误
         urlRequest = try plugins.reduce(urlRequest) { try $1.intercept(urlRequest: $0) }
@@ -86,17 +87,6 @@ class Constructor<R: Request> {
 
         headerFields?.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
 
-        HTTPKit.logDebug(
-            """
-            ============================================================
-            发起网络请求
-            url : \(url)
-            parameters: \(parameters ?? [:])
-            headerFields: \(headerFields ?? [:])
-            ============================================================
-            """
-        )
-
         if let encoding = encoding {
             do {
                 urlRequest = try encoding.encode(urlRequest, with: parameters)
@@ -115,11 +105,11 @@ class Constructor<R: Request> {
         plugins: [PluginType]
     ) throws -> Requestable {
 
-        /// 生成Alamofire拦截器
-        var plugins: [PluginType] = plugins
-        if let interceptor = request.interceptor {
-            plugins.append(interceptor)
-        }
+//        /// 生成Alamofire拦截器
+//        var plugins: [PluginType] = plugins
+//        if let interceptor = request.interceptor {
+//            plugins.append(interceptor)
+//        }
 
         /// 生成请求
         var alamoRequest: Requestable?
@@ -151,19 +141,7 @@ class Constructor<R: Request> {
                 alamoRequest :
                 alamoRequest.validate(statusCode: validateStatusCode)
         } else {
-
-            HTTPKit.logVerbose(
-                """
-                ============================================================
-                构建网络请求失败
-                url : \(url)
-                parameters: \(parameters ?? [:])
-                headerFields: \(headerFields ?? [:])
-                ============================================================
-                """
-            )
-
-            throw HTTPError.external(error!, request: urlRequest, response: nil)
+            throw HTTPError.multipart(error: error, reqeuest: urlRequest)
         }
     }
 }

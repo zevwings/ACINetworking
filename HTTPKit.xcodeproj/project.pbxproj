@@ -12,7 +12,10 @@
 		4D8397E4232A94E0005C7CE8 /* Single+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793823289E4B0002323E /* Single+Response.swift */; };
 		4D8397E5232A94E0005C7CE8 /* Observable+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793623289E3C0002323E /* Observable+Response.swift */; };
 		4D8397EB232B1C50005C7CE8 /* HTTPKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD229D323279D9C00F1303E /* HTTPKit.framework */; };
-		4D9669F023BB4A37000BF35C /* HTTPKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9669EF23BB4A37000BF35C /* HTTPKit.swift */; };
+		4D9669F323BDB7AA000BF35C /* HTTPLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9669F223BDB7AA000BF35C /* HTTPLogger.swift */; };
+		4D9669F523BDB814000BF35C /* HTTPClient+Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9669F423BDB814000BF35C /* HTTPClient+Logger.swift */; };
+		4D9669F723BDB911000BF35C /* Response+Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9669F623BDB911000BF35C /* Response+Logger.swift */; };
+		4D9669F923BDBA7B000BF35C /* HTTPError+Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D9669F823BDBA7B000BF35C /* HTTPError+Logger.swift */; };
 		4DCE97AB23349A5000A28338 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97AA23349A5000A28338 /* Alamofire.framework */; };
 		4DCE97BA2334A1CB00A28338 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97B92334A1CB00A28338 /* RxSwift.framework */; };
 		4DCE97BB2334A1CB00A28338 /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97B92334A1CB00A28338 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -54,10 +57,13 @@
 		4D8397D7232A94C7005C7CE8 /* RxSupport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSupport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D8397D9232A94C7005C7CE8 /* RxSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxSupport.h; sourceTree = "<group>"; };
 		4D8397DA232A94C7005C7CE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4D8397E7232A951E005C7CE8 /* HTTPKit.swift.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HTTPKit.swift.podspec; sourceTree = "<group>"; };
+		4D8397E7232A951E005C7CE8 /* HTTPKit.swift.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HTTPKit.swift.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4D89793623289E3C0002323E /* Observable+Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Observable+Response.swift"; sourceTree = "<group>"; };
 		4D89793823289E4B0002323E /* Single+Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Single+Response.swift"; sourceTree = "<group>"; };
-		4D9669EF23BB4A37000BF35C /* HTTPKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPKit.swift; sourceTree = "<group>"; };
+		4D9669F223BDB7AA000BF35C /* HTTPLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPLogger.swift; sourceTree = "<group>"; };
+		4D9669F423BDB814000BF35C /* HTTPClient+Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HTTPClient+Logger.swift"; sourceTree = "<group>"; };
+		4D9669F623BDB911000BF35C /* Response+Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Response+Logger.swift"; sourceTree = "<group>"; };
+		4D9669F823BDBA7B000BF35C /* HTTPError+Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HTTPError+Logger.swift"; sourceTree = "<group>"; };
 		4DCE97AA23349A5000A28338 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
 		4DCE97B92334A1CB00A28338 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		4DCE97BD2334A1ED00A28338 /* HandyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HandyJSON.framework; path = Carthage/Build/iOS/HandyJSON.framework; sourceTree = "<group>"; };
@@ -134,12 +140,15 @@
 			path = Paginator;
 			sourceTree = "<group>";
 		};
-		4D9669EE23BB4A28000BF35C /* Configration */ = {
+		4D9669F123BDB78B000BF35C /* Logger */ = {
 			isa = PBXGroup;
 			children = (
-				4D9669EF23BB4A37000BF35C /* HTTPKit.swift */,
+				4D9669F223BDB7AA000BF35C /* HTTPLogger.swift */,
+				4D9669F423BDB814000BF35C /* HTTPClient+Logger.swift */,
+				4D9669F623BDB911000BF35C /* Response+Logger.swift */,
+				4D9669F823BDBA7B000BF35C /* HTTPError+Logger.swift */,
 			);
-			path = Configration;
+			path = Logger;
 			sourceTree = "<group>";
 		};
 		4DD229C923279D9C00F1303E = {
@@ -167,13 +176,13 @@
 			children = (
 				4DD229D623279D9C00F1303E /* HTTPKit.h */,
 				4DD229D723279D9C00F1303E /* Info.plist */,
-				4D9669EE23BB4A28000BF35C /* Configration */,
 				4DD22A0123279E4B00F1303E /* Client */,
 				4DD22A0C23279E4B00F1303E /* Service */,
 				4DD229F823279E4B00F1303E /* Request */,
 				4D9669E723BADDE7000BF35C /* Paginator */,
 				4DD22A0E23279E4B00F1303E /* Transformer */,
 				4DD229F423279E4B00F1303E /* Plugin */,
+				4D9669F123BDB78B000BF35C /* Logger */,
 			);
 			path = HTTPKit;
 			sourceTree = "<group>";
@@ -409,11 +418,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D9669F523BDB814000BF35C /* HTTPClient+Logger.swift in Sources */,
+				4D9669F723BDB911000BF35C /* Response+Logger.swift in Sources */,
 				4DD22A1923279E4B00F1303E /* ValidationType.swift in Sources */,
 				4DD22A2223279E4B00F1303E /* HTTPClient+Defaults.swift in Sources */,
 				4DD22A2B23279E4B00F1303E /* Transformer.swift in Sources */,
 				4DD22A2723279E4B00F1303E /* HTTPError.swift in Sources */,
 				4DD22A2A23279E4B00F1303E /* Serviceable.swift in Sources */,
+				4D9669F323BDB7AA000BF35C /* HTTPLogger.swift in Sources */,
+				4D9669F923BDBA7B000BF35C /* HTTPError+Logger.swift in Sources */,
 				4DD22A1623279E4B00F1303E /* Plugin.swift in Sources */,
 				4DD22A2923279E4B00F1303E /* Task.swift in Sources */,
 				4DD22A1F23279E4B00F1303E /* Route.swift in Sources */,
@@ -422,7 +435,6 @@
 				4DD22A2023279E4B00F1303E /* Constructor.swift in Sources */,
 				4DD22A1823279E4B00F1303E /* MultipartFormData.swift in Sources */,
 				4DD22A2823279E4B00F1303E /* HTTPClient+Alamofire.swift in Sources */,
-				4D9669F023BB4A37000BF35C /* HTTPKit.swift in Sources */,
 				4DD22A2423279E4B00F1303E /* HTTPClient.swift in Sources */,
 				4DD22A2523279E4B00F1303E /* Response.swift in Sources */,
 				4DD22A1D23279E4B00F1303E /* Request.swift in Sources */,
