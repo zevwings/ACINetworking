@@ -33,11 +33,9 @@ extension HTTPLogger {
         } else {
             description.append("parameters: \n")
         }
-
         description.append("------------------------------------------------------------\n")
         description.append("error: \(error.error)\n")
         description.append("--------------------------- Log End ---------------------------")
-
         HTTPLogger.log(logLevel, items: description)
     }
 

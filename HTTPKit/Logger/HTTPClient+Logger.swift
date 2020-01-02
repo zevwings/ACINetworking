@@ -40,9 +40,7 @@ extension HTTPLogger {
                 description.append("error: \(String(describing: error))\n")
             }
         }
-
         description.append("--------------------------- Log End ---------------------------\n")
-
         HTTPLogger.log(logLevel, items: description)
     }
 }

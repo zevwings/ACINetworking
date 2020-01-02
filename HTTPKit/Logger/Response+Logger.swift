@@ -31,7 +31,6 @@ extension HTTPLogger {
             description.append("content: \(content)\n")
         }
         description.append("--------------------------- Log End ---------------------------\n")
-
         HTTPLogger.log(logLevel, items: description)
     }
 }
