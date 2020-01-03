@@ -24,6 +24,12 @@ public protocol Paginator : AnyObject {
     /// 每页数据数量对应的Key，默认为`rows`
     var countKey: String { get }
 
+    /// 重置下标
+    func reset() -> Int
+
+    /// 下一页
+    func next() -> Int
+
     /// 更新分页索引下标
     func updateIndex(_ data: Data) throws -> Data
 }
