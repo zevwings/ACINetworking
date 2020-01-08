@@ -53,18 +53,10 @@ extension HTTPError : LocalizedError {
             return "网络请求超时\n请检查网络是否正常"
         case .connectionLost:
             return "网络链接错误\n请检查网络是否正常"
-        case .external:
-            return "网络请求失败"
+        case .external(let error, _, _):
+            return errorHandler(error: error, defaultMessage: "网络请求失败")
         case .underlying(let error, _, _):
-            return errorHandler(error: error, defaultMessage: "网络错误")
-        }
-    }
-
-    func errorHandler(error: Error, defaultMessage message: String) -> String {
-        if error is LocalizedError {
-            return error.localizedDescription
-        } else {
-            return message
+            return errorHandler(error: error, defaultMessage: "网络请求失败")
         }
     }
 }
@@ -89,15 +81,26 @@ extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
             return "网络请求超时，请检查网络是否正常"
         case .connectionLost:
             return "网络连接失败，请检查网络是否正常"
-        case .external:
-            return "系统错误"
-        case .underlying:
-            return "网络错误，具体错误信息如下"
+        case .external(let error, _, _):
+            return errorHandler(error: error, defaultMessage: "内部系统错误")
+        case .underlying(let error, _, _):
+            return errorHandler(error: error, defaultMessage: "业务逻辑错误")
         }
     }
 
     public var debugDescription: String {
         return description
+    }
+}
+
+extension HTTPError {
+
+    func errorHandler(error: Error, defaultMessage message: String) -> String {
+        if error is LocalizedError {
+            return error.localizedDescription
+        } else {
+            return message
+        }
     }
 }
 
