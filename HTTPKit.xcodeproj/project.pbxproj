@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D1B38FF23C5716C00C1E633 /* Constructor+Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1B38FE23C5716C00C1E633 /* Constructor+Logger.swift */; };
 		4D8397DB232A94C7005C7CE8 /* RxSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8397D9232A94C7005C7CE8 /* RxSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4D8397E3232A94E0005C7CE8 /* HTTPClient+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD229F723279E4B00F1303E /* HTTPClient+Rx.swift */; };
 		4D8397E4232A94E0005C7CE8 /* Single+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793823289E4B0002323E /* Single+Response.swift */; };
@@ -54,6 +55,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4D1B38FE23C5716C00C1E633 /* Constructor+Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Constructor+Logger.swift"; sourceTree = "<group>"; };
 		4D8397D7232A94C7005C7CE8 /* RxSupport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSupport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D8397D9232A94C7005C7CE8 /* RxSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxSupport.h; sourceTree = "<group>"; };
 		4D8397DA232A94C7005C7CE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -144,9 +146,10 @@
 			isa = PBXGroup;
 			children = (
 				4D9669F223BDB7AA000BF35C /* HTTPLogger.swift */,
+				4D1B38FE23C5716C00C1E633 /* Constructor+Logger.swift */,
 				4D9669F423BDB814000BF35C /* HTTPClient+Logger.swift */,
-				4D9669F623BDB911000BF35C /* Response+Logger.swift */,
 				4D9669F823BDBA7B000BF35C /* HTTPError+Logger.swift */,
+				4D9669F623BDB911000BF35C /* Response+Logger.swift */,
 			);
 			path = Logger;
 			sourceTree = "<group>";
@@ -438,6 +441,7 @@
 				4DD22A2423279E4B00F1303E /* HTTPClient.swift in Sources */,
 				4DD22A2523279E4B00F1303E /* Response.swift in Sources */,
 				4DD22A1D23279E4B00F1303E /* Request.swift in Sources */,
+				4D1B38FF23C5716C00C1E633 /* Constructor+Logger.swift in Sources */,
 				4DD22A1A23279E4B00F1303E /* Paginator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

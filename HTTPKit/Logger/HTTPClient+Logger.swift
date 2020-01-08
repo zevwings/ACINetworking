@@ -10,12 +10,12 @@ import Foundation
 
 extension HTTPLogger {
 
-    public static func success(
+    public static func response(
         _ logLevel: LogLevel,
-        title: String,
         urlRequest: URLRequest?,
-        extra result: Result<Response, HTTPError>? = nil
+        result: Result<Response, HTTPError>
     ) {
+        let title = result.isSuccess ? "✅✅网络请求成功✅✅" : "💢💢网络请求失败💢💢"
         var description: String = ""
         description.append("-------------------------- Log Start --------------------------\n")
         description.append("\(title)\n")
@@ -27,20 +27,39 @@ extension HTTPLogger {
         } else {
             description.append("parameters: \n")
         }
-        if let result = result {
-            switch result {
-            case .success(let response):
-                if let response = String(data: response.data, encoding: .utf8) {
-                    description.append("response: \(response)\n")
-                } else {
-                    description.append("response: \n")
-                }
-            case .failure(let error):
-                description.append("------------------------------------------------------------\n")
-                description.append("error: \(String(describing: error))\n")
+        switch result {
+        case .success(let response):
+            if let response = String(data: response.data, encoding: .utf8) {
+                description.append("response: \(response)\n")
+            } else {
+                description.append("response: \n")
             }
+        case .failure(let error):
+            description.append("------------------------------------------------------------\n")
+            description.append("error: \(String(describing: error))\n")
         }
         description.append("--------------------------- Log End ---------------------------\n")
         HTTPLogger.log(logLevel, items: description)
+    }
+}
+
+fileprivate extension Result {
+
+    var isSuccess: Bool {
+        switch self {
+        case .success:
+            return true
+        case .failure:
+            return false
+        }
+    }
+
+    var isFailure: Bool {
+        switch self {
+        case .success:
+            return false
+        case .failure:
+            return true
+        }
     }
 }

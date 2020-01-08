@@ -86,7 +86,7 @@ public extension Response {
             HTTPLogger.failure(.verbose, error: error)
             throw error
         }
-        HTTPLogger.response(.verbose, targetType: Image.self, request: request, extra: image)
+        HTTPLogger.transform(.verbose, targetType: Image.self, request: request, extra: image)
         return image
     }
 
@@ -98,7 +98,7 @@ public extension Response {
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: options)
             if logVerbose {
-                HTTPLogger.response(.verbose, targetType: Any.self, request: request, extra: jsonObject)
+                HTTPLogger.transform(.verbose, targetType: Any.self, request: request, extra: jsonObject)
             }
             return jsonObject
         } catch {
@@ -130,7 +130,7 @@ public extension Response {
                     HTTPLogger.failure(.verbose, error: error)
                     throw error
             }
-            HTTPLogger.response(.verbose, targetType: String.self, request: request, extra: string)
+            HTTPLogger.transform(.verbose, targetType: String.self, request: request, extra: string)
             return string
         } else {
             guard let string = String(data: data, encoding: .utf8) else {
@@ -143,7 +143,7 @@ public extension Response {
                 HTTPLogger.failure(.verbose, error: error)
                 throw error
             }
-            HTTPLogger.response(.verbose, targetType: String.self, request: request, extra: string)
+            HTTPLogger.transform(.verbose, targetType: String.self, request: request, extra: string)
             return string
         }
     }
@@ -173,7 +173,7 @@ public extension Response {
             } else {
                 value = try decoder.decode(type, from: data)
             }
-            HTTPLogger.response(.verbose, targetType: type, request: request, extra: value)
+            HTTPLogger.transform(.verbose, targetType: type, request: request, extra: value)
             return value
         } catch {
             let error = HTTPError.cast(

@@ -10,7 +10,7 @@ import Foundation
 
 extension HTTPLogger {
 
-    public static func response(
+    public static func transform(
         _ logLevel: LogLevel,
         targetType: Any.Type,
         request: URLRequest?,

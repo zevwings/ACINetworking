@@ -45,9 +45,8 @@ public final class HTTPClient<R: Request> : Client {
         do {
             constructor = try Constructor(request: request)
             alamoRequest = try constructor.process(with: manager, plugins: plugins)
-            HTTPLogger.success(
+            HTTPLogger.request(
                 .debug,
-                title: "🚀🚀准备发起网络请求🚀🚀",
                 urlRequest: constructor.urlRequest
             )
         } catch let error as HTTPError {
@@ -83,11 +82,10 @@ public final class HTTPClient<R: Request> : Client {
         /// 处理返回结果
 
         let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
-            HTTPLogger.success(
+            HTTPLogger.response(
                 .debug,
-                title: "✅✅网络请求成功✅✅",
                 urlRequest: constructor.urlRequest,
-                extra: result
+                result: result
             )
             self.plugins.forEach { $0.didReceive(result, request: request) }
             if let interceptor = request.interceptor {
