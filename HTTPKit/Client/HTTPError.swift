@@ -50,9 +50,9 @@ extension HTTPError : LocalizedError {
         case .emptyResponse, .cast, .statusCode:
             return "服务器返回错误"
         case .timeout:
-            return "网络请求超时\n请检查网络是否正常"
+            return "网络请求超时"
         case .connectionLost:
-            return "网络链接错误\n请检查网络是否正常"
+            return "网络链接错误"
         case .external(let error, _, _):
             return errorHandler(error: error, defaultMessage: "网络请求失败")
         case .underlying(let error, _, _):

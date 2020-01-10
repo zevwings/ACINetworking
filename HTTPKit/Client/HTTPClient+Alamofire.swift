@@ -114,8 +114,13 @@ extension RequestConvertible where Self : DataRequest {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.external(error, request: response.request, response: response.response)
-                completionHandler(.failure(err))
+                switch error {
+                case let err as HTTPError:
+                    completionHandler(.failure(err))
+                default:
+                    let err = HTTPError.external(error, request: response.request, response: response.response)
+                    completionHandler(.failure(err))
+                }
             }
         }
 
@@ -178,20 +183,28 @@ extension RequestConvertible where Self : DownloadRequest {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err: HTTPError
-                 switch error._code {
-                 case NSURLErrorTimedOut:
-                     err = HTTPError.timeout(request: response.request, response: response.response)
-                 case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
-                     err = HTTPError.connectionLost(request: response.request, response: response.response)
-                 default:
-                     err = HTTPError.external(error, request: response.request, response: response.response)
-                 }
-                completionHandler(.failure(err))
+                switch error {
+                case let err as HTTPError:
+                    completionHandler(.failure(err))
+                default:
+                    let err = HTTPError.external(error, request: response.request, response: response.response)
+                    completionHandler(.failure(err))
+                }
             }
         }
 
         let responseSerializer = DownloadResponseSerializer { (request, response, url, error) -> Result<Response> in
+
+            if let err = error {
+                switch err._code {
+                case NSURLErrorTimedOut:
+                    return .failure(HTTPError.timeout(request: request, response: response))
+                case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
+                    return .failure(HTTPError.connectionLost(request: request, response: response))
+                default:
+                    return .failure(HTTPError.external(err, request: request, response: response))
+                }
+            }
 
             guard let fileURL = url else {
                 return .failure(HTTPError.emptyResponse(request: request, response: response))
