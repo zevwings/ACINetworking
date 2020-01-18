@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
   spec.name           = "HTTPKit.swift"
   spec.module_name    = "HTTPKit"
-  spec.version        = "1.0.6"
+  spec.version        = "1.0.7"
   spec.summary        = "A network layer base on Alamofire."
   spec.swift_version  = "5.1"
 
@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.homepage     = "https://github.com/zevwings/HTTPKit"
   spec.license      = "Apache"
   spec.author       = { "zevwings" => "zev.wings@gmail.com" }
-  spec.platform     = :ios, "10.0"
+  spec.platform     = :ios, "9.0"
   spec.source       = { :git => "https://github.com/zevwings/HTTPKit.git", :tag => "#{spec.version}" }
   spec.requires_arc = true
 
