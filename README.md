@@ -112,6 +112,16 @@ client.request(request: .board("messageTyp")) { result in
     }
 }
 ```
+使用 RxSwift
+```swift
+client.rx.request(.board(messageType))
+    .mapJSON()
+    .subscribe(onSuccess: { json in
+
+    }, onError: { error in
+
+    })
+```
 
 ### Response
 
@@ -222,7 +232,7 @@ public enum Content {
 }
 ```
 
-###Route
+### Route
 `Route`参考自`MoyaSurge`，以 `HTTPMethod(URLString)` 的形式使请求内容更简单，更简约。
 
 ```swift

@@ -38,6 +38,7 @@
 		4DD22A2923279E4B00F1303E /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0B23279E4B00F1303E /* Task.swift */; };
 		4DD22A2A23279E4B00F1303E /* Serviceable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0D23279E4B00F1303E /* Serviceable.swift */; };
 		4DD22A2B23279E4B00F1303E /* Transformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0F23279E4B00F1303E /* Transformer.swift */; };
+		4DF9E56A23D59D7800F8F507 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4DF9E56923D59D7800F8F507 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,6 +92,7 @@
 		4DD22A0B23279E4B00F1303E /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		4DD22A0D23279E4B00F1303E /* Serviceable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serviceable.swift; sourceTree = "<group>"; };
 		4DD22A0F23279E4B00F1303E /* Transformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transformer.swift; sourceTree = "<group>"; };
+		4DF9E56923D59D7800F8F507 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 		4D8397E6232A9504005C7CE8 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				4DF9E56923D59D7800F8F507 /* README.md */,
 				4D8397E7232A951E005C7CE8 /* HTTPKit.swift.podspec */,
 			);
 			name = Support;
@@ -362,6 +365,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4DF9E56A23D59D7800F8F507 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
