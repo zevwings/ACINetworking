@@ -11,7 +11,7 @@
 [HTTPKit](https://github.com/zevwings/HTTPKit)是基于`Alamofire`的网络抽象层，它可以帮助我们规范`Alamofire`的网络请求。`HTTPKit`充分的封装了`Alamofire`网络请求的细节，你可以通过`HTTPKit`使用到所有`Alamofire`的功能。
 项目主要分为`Serviceable`, `Request`, `Constructor`, `Client`, `Task`, `Transformer`, `Plugin`这七个模块，他们会帮助我们处理网络请求，分别在不同的阶段帮助我们处理网络请求。
 
-##Usage
+## Usage
 
 ##### Serviceable
 
