@@ -42,12 +42,14 @@ public typealias JSONEncoding = Alamofire.JSONEncoding
 public typealias URLEncoding = Alamofire.URLEncoding
 
 // Requestable
-typealias Requestable = RequestConvertible & TaskConvertible
-typealias InternalProgressHandler = (Progress) -> Void
+public typealias Requestable = RequestConvertible & TaskConvertible
+public typealias InternalProgressHandler = (Progress) -> Void
 
 // MARK: - RequestConvertible
 
-protocol RequestConvertible {
+public protocol RequestConvertible {
+
+    var request: URLRequest? { get }
 
     var executeProgress: Progress { get }
 
@@ -89,7 +91,7 @@ extension RequestConvertible where Self : UploadRequest {
 
 // MARK: - DataRequest
 
-extension RequestConvertible where Self : DataRequest {
+public extension RequestConvertible where Self : DataRequest {
 
     var executeProgress: Progress {
         return self.progress
@@ -158,7 +160,7 @@ extension DataRequest : RequestConvertible {}
 
 // MARK: - DownloadRequest
 
-extension RequestConvertible where Self : DownloadRequest {
+public extension RequestConvertible where Self : DownloadRequest {
 
     var executeProgress: Progress {
         return self.progress
@@ -237,7 +239,7 @@ extension DownloadRequest : RequestConvertible {}
 
 // MARK: - TaskConvertible
 
-protocol TaskConvertible {
+public protocol TaskConvertible {
 
     /// 格式化当前网络请求
     var request: URLRequest? { get }

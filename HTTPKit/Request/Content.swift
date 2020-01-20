@@ -9,12 +9,6 @@ import Foundation
 
 public typealias Parameters = [String: Any]
 
-/// 参数格式化类型，根据格式化类型选取`Alamofire`的`ParameterEncoding`
-public enum ParameterFormatter {
-    case url
-    case json
-}
-
 /// 请求内容
 ///
 /// - requestPlain 无参数请求
@@ -26,17 +20,24 @@ public enum ParameterFormatter {
 /// - uploadFormDataParameters: 带参数的文件上传`MultipartFormData`
 public enum Content {
 
+    /// 参数格式化类型，根据格式化类型选取`Alamofire`的`ParameterEncoding`
+    public enum ParameterFormatter {
+        case url
+        case json
+        case custom(ParameterEncoding)
+    }
+
     /// 无参数请求
     case requestPlain
 
     /// 有参数请求
-    case requestParameters(parameters: Parameters, formatter: ParameterFormatter)
+    case requestParameters(formatter: ParameterFormatter, parameters: Parameters)
 
     /// 无参数下载请求
     case download(destination: Destination?)
 
     /// 有参数下载请求
-    case downloadParameters(parameters: Parameters, formatter: ParameterFormatter, destination: Destination?)
+    case downloadParameters(formatter: ParameterFormatter, parameters: Parameters, destination: Destination?)
 
     /// 上传文件请求
     case uploadFile(fileURL: URL)
@@ -46,18 +47,18 @@ public enum Content {
 
     /// 有参数Mutipart上传请求
     // swiftlint:disable:next line_length
-    case uploadFormDataParameters(parameters: Parameters, formatter: ParameterFormatter, mutipartFormData: [MultipartFormData])
+    case uploadFormDataParameters(formatter: ParameterFormatter, parameters: Parameters, mutipartFormData: [MultipartFormData])
 }
 
 extension Content {
 
     var parameters: Parameters? {
         switch self {
-        case .requestParameters(let parameters, _):
+        case .requestParameters(_, let parameters):
             return parameters
-        case .downloadParameters(let parameters, _, _):
+        case .downloadParameters(_, let parameters, _):
             return parameters
-        case .uploadFormDataParameters(let parameters, _, _):
+        case .uploadFormDataParameters(_, let parameters, _):
             return parameters
         default:
             return nil
@@ -66,11 +67,11 @@ extension Content {
 
     var encoding: ParameterEncoding? {
         switch self {
-        case .requestParameters(_, let formatter):
+        case .requestParameters(let formatter, _):
             return encoding(for: formatter)
-        case .downloadParameters(_, let formatter, _):
+        case .downloadParameters(let formatter, _, _):
             return encoding(for: formatter)
-        case .uploadFormDataParameters(_, let formatter, _):
+        case .uploadFormDataParameters(let formatter, _, _):
             return encoding(for: formatter)
         default:
             return nil
@@ -83,6 +84,8 @@ extension Content {
             return JSONEncoding.default
         case .url:
             return URLEncoding.default
+        case .custom(let encoding):
+            return encoding
         }
     }
 }

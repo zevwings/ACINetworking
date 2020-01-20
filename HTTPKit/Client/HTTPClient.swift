@@ -11,14 +11,17 @@ public final class HTTPClient<R: Request> : Client {
 
     let manager: SessionManager
     let plugins: [PluginType]
+    let builder: Builder
 
     /// 初始化方法
     public init(
         manager: SessionManager = HTTPClient.defaultSessionManager(),
-        plugins: [PluginType] = []
+        plugins: [PluginType] = [],
+        builder: Builder = RequestBuilder()
     ) {
         self.manager = manager
         self.plugins = plugins
+        self.builder = builder
     }
 
     ///
@@ -41,13 +44,11 @@ public final class HTTPClient<R: Request> : Client {
 
         /// 构建Alamofire请求
         var alamoRequest: Requestable
-        let constructor: Constructor<R>
         do {
-            constructor = try Constructor(request: request)
-            alamoRequest = try constructor.process(with: manager, plugins: plugins)
+            alamoRequest = try builder.process(request: request, manager: manager, plugins: plugins)
             HTTPLogger.request(
                 .debug,
-                urlRequest: constructor.urlRequest
+                urlRequest: alamoRequest.request
             )
         } catch let error as HTTPError {
             HTTPLogger.failure(.verbose, error: error)
@@ -84,7 +85,7 @@ public final class HTTPClient<R: Request> : Client {
         let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
             HTTPLogger.response(
                 .debug,
-                urlRequest: constructor.urlRequest,
+                urlRequest: alamoRequest.request,
                 result: result
             )
             self.plugins.forEach { $0.didReceive(result, request: request) }
