@@ -357,11 +357,11 @@ using `carthage update` and drag `HTTPKit.framework` into your project.
 The framework is under the Carthage/Build, and you should drag it into  `Target` -> `Genral` -> `Embedded Binaries`
 
 ### Manual
-Download this project, And drag `ZRefreshing.xcodeproj` into your own project.
+Download this project, And drag `HTTPKit.xcodeproj` into your own project.
 
 In your target’s General tab, click the ’+’ button under `Embedded Binaries`
 
-Select the `ZRefreshing.framework` to Add to your platform. 
+Select the `HTTPKit.framework` to Add to your platform. 
 
 
 ## License
