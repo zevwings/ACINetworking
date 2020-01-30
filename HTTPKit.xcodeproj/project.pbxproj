@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4D1B38FF23C5716C00C1E633 /* Constructor+Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1B38FE23C5716C00C1E633 /* Constructor+Logger.swift */; };
+		4D1B38FF23C5716C00C1E633 /* Builder+Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1B38FE23C5716C00C1E633 /* Builder+Logger.swift */; };
 		4D8397DB232A94C7005C7CE8 /* RxSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D8397D9232A94C7005C7CE8 /* RxSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4D8397E3232A94E0005C7CE8 /* HTTPClient+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD229F723279E4B00F1303E /* HTTPClient+Rx.swift */; };
 		4D8397E4232A94E0005C7CE8 /* Single+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793823289E4B0002323E /* Single+Response.swift */; };
@@ -28,7 +28,7 @@
 		4DD22A1D23279E4B00F1303E /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD229FE23279E4B00F1303E /* Request.swift */; };
 		4DD22A1E23279E4B00F1303E /* Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD229FF23279E4B00F1303E /* Content.swift */; };
 		4DD22A1F23279E4B00F1303E /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0023279E4B00F1303E /* Route.swift */; };
-		4DD22A2023279E4B00F1303E /* Constructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0223279E4B00F1303E /* Constructor.swift */; };
+		4DD22A2023279E4B00F1303E /* Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0223279E4B00F1303E /* Builder.swift */; };
 		4DD22A2223279E4B00F1303E /* HTTPClient+Defaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0423279E4B00F1303E /* HTTPClient+Defaults.swift */; };
 		4DD22A2423279E4B00F1303E /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0623279E4B00F1303E /* HTTPClient.swift */; };
 		4DD22A2523279E4B00F1303E /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD22A0723279E4B00F1303E /* Response.swift */; };
@@ -56,7 +56,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4D1B38FE23C5716C00C1E633 /* Constructor+Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Constructor+Logger.swift"; sourceTree = "<group>"; };
+		4D1B38FE23C5716C00C1E633 /* Builder+Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Builder+Logger.swift"; sourceTree = "<group>"; };
 		4D8397D7232A94C7005C7CE8 /* RxSupport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxSupport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D8397D9232A94C7005C7CE8 /* RxSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxSupport.h; sourceTree = "<group>"; };
 		4D8397DA232A94C7005C7CE8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,7 +82,7 @@
 		4DD229FE23279E4B00F1303E /* Request.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		4DD229FF23279E4B00F1303E /* Content.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Content.swift; sourceTree = "<group>"; };
 		4DD22A0023279E4B00F1303E /* Route.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
-		4DD22A0223279E4B00F1303E /* Constructor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constructor.swift; sourceTree = "<group>"; };
+		4DD22A0223279E4B00F1303E /* Builder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Builder.swift; sourceTree = "<group>"; };
 		4DD22A0423279E4B00F1303E /* HTTPClient+Defaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HTTPClient+Defaults.swift"; sourceTree = "<group>"; };
 		4DD22A0623279E4B00F1303E /* HTTPClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		4DD22A0723279E4B00F1303E /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
@@ -149,7 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				4D9669F223BDB7AA000BF35C /* HTTPLogger.swift */,
-				4D1B38FE23C5716C00C1E633 /* Constructor+Logger.swift */,
+				4D1B38FE23C5716C00C1E633 /* Builder+Logger.swift */,
 				4D9669F423BDB814000BF35C /* HTTPClient+Logger.swift */,
 				4D9669F823BDBA7B000BF35C /* HTTPError+Logger.swift */,
 				4D9669F623BDB911000BF35C /* Response+Logger.swift */,
@@ -221,7 +221,7 @@
 				4DD22A0623279E4B00F1303E /* HTTPClient.swift */,
 				4DD22A0A23279E4B00F1303E /* HTTPClient+Alamofire.swift */,
 				4DD22A0423279E4B00F1303E /* HTTPClient+Defaults.swift */,
-				4DD22A0223279E4B00F1303E /* Constructor.swift */,
+				4DD22A0223279E4B00F1303E /* Builder.swift */,
 				4DD22A0B23279E4B00F1303E /* Task.swift */,
 				4DD22A0723279E4B00F1303E /* Response.swift */,
 			);
@@ -439,13 +439,13 @@
 				4DD22A1F23279E4B00F1303E /* Route.swift in Sources */,
 				4DD22A1E23279E4B00F1303E /* Content.swift in Sources */,
 				4DD22A2623279E4B00F1303E /* Client.swift in Sources */,
-				4DD22A2023279E4B00F1303E /* Constructor.swift in Sources */,
+				4DD22A2023279E4B00F1303E /* Builder.swift in Sources */,
 				4DD22A1823279E4B00F1303E /* MultipartFormData.swift in Sources */,
 				4DD22A2823279E4B00F1303E /* HTTPClient+Alamofire.swift in Sources */,
 				4DD22A2423279E4B00F1303E /* HTTPClient.swift in Sources */,
 				4DD22A2523279E4B00F1303E /* Response.swift in Sources */,
 				4DD22A1D23279E4B00F1303E /* Request.swift in Sources */,
-				4D1B38FF23C5716C00C1E633 /* Constructor+Logger.swift in Sources */,
+				4D1B38FF23C5716C00C1E633 /* Builder+Logger.swift in Sources */,
 				4DD22A1A23279E4B00F1303E /* Paginator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
