@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
   spec.homepage     = "https://github.com/zevwings/HTTPKit"
   spec.license      = "Apache"
   spec.author       = { "zevwings" => "zev.wings@gmail.com" }
-  spec.platform     = :ios, "9.0"
+  spec.platform     = :ios, "10.0"
   spec.source       = { :git => "https://github.com/zevwings/HTTPKit.git", :tag => "#{spec.version}" }
   spec.requires_arc = true
 
