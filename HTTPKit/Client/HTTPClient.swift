@@ -9,17 +9,17 @@ import Foundation
 
 public final class HTTPClient<R: Request> : Client {
 
-    let manager: SessionManager
+    let session: Session
     let plugins: [PluginType]
     let builder: Builder
 
     /// 初始化方法
     public init(
-        manager: SessionManager = HTTPClient.defaultSessionManager(),
+        session: Session = HTTPClient.defaultSession(),
         plugins: [PluginType] = [],
         builder: Builder = RequestBuilder()
     ) {
-        self.manager = manager
+        self.session = session
         self.plugins = plugins
         self.builder = builder
     }
@@ -40,12 +40,12 @@ public final class HTTPClient<R: Request> : Client {
     ) -> Task? {
 
         /// 设置重试
-        manager.retrier = request.retrier
+//        manager.retrier = request.retrier
 
         /// 构建Alamofire请求
         var alamoRequest: Requestable
         do {
-            alamoRequest = try builder.process(request: request, manager: manager, plugins: plugins)
+            alamoRequest = try builder.process(request: request, session: session, plugins: plugins)
             HTTPLogger.request(
                 .debug,
                 urlRequest: alamoRequest.request

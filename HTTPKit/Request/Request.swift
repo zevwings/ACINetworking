@@ -36,7 +36,6 @@ public protocol Request {
     /// 数据转换器，默认为`nil`
     var transformer: Transformer? { get }
 
-    var retrier: Retrier? { get }
 }
 
 // MARK: - Defaults
@@ -53,7 +52,6 @@ extension Request {
 
     public var transformer: Transformer? { return nil }
 
-    public var retrier: Retrier? { return nil }
 }
 
 // MARK: - Equatable

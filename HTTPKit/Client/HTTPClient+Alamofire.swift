@@ -12,11 +12,12 @@ import Alamofire
 
 // Public
 public typealias HTTPMethod = Alamofire.HTTPMethod
-public typealias Destination = Alamofire.DownloadRequest.DownloadFileDestination
+public typealias Destination = Alamofire.DownloadRequest.Destination
 public typealias HTTPHeaders = Alamofire.HTTPHeaders
+public typealias HTTPHeader = Alamofire.HTTPHeader
 
 // Session
-public typealias SessionManager = Alamofire.SessionManager
+public typealias Session = Alamofire.Session
 public typealias SessionDelegate = Alamofire.SessionDelegate
 
 // Request
@@ -28,13 +29,14 @@ public typealias RequestMultipartFormData = Alamofire.MultipartFormData
 // Result
 public typealias DataResponse = Alamofire.DataResponse
 public typealias DownloadResponse = Alamofire.DownloadResponse
+public typealias ResponseSerializerProtocol = Alamofire.ResponseSerializer
 public typealias DataResponseSerializerProtocol = Alamofire.DataResponseSerializerProtocol
 public typealias DownloadResponseSerializerProtocol = Alamofire.DownloadResponseSerializerProtocol
 
 public typealias URLRequestConvertible = Alamofire.URLRequestConvertible
 
 // RequestInterceptor
-public typealias RequestRetrier = Alamofire.RequestRetrier
+public typealias RetryResult = Alamofire.RetryResult
 
 // ParameterEncoding
 public typealias ParameterEncoding = Alamofire.ParameterEncoding
@@ -49,28 +51,55 @@ public typealias InternalProgressHandler = (Progress) -> Void
 
 public protocol RequestConvertible {
 
-    var request: URLRequest? { get }
-
     var executeProgress: Progress { get }
 
     /// 格式化网络请求进度回调
-    func progress(
-        queue: DispatchQueue,
-        progressHandler: @escaping InternalProgressHandler
-    ) -> Self
+    func progress(queue: DispatchQueue, progressHandler: @escaping InternalProgressHandler) -> Self
 
     /// 格式化网络请求回调内容
-    func response(
-        queue: DispatchQueue,
-        completionHandler: @escaping (Swift.Result<Response, HTTPError>) -> Void
-    ) -> Self
+    func response(queue: DispatchQueue, completionHandler: @escaping (Result<Response, HTTPError>) -> Void) -> Self
 
     /// 格式化网络请求返回Code验证
     func validate<S>(statusCode acceptableStatusCodes: S) -> Self where S : Sequence, S.Element == Int
 
 }
 
-// MARK: - UploadRequest
+extension RequestConvertible where Self : DataRequest {
+
+    public var executeProgress: Progress {
+        return self.downloadProgress
+    }
+
+    public func progress(
+        queue: DispatchQueue = .main,
+        progressHandler: @escaping InternalProgressHandler
+    ) -> Self {
+        return downloadProgress(closure: { progress in
+            progressHandler(progress)
+        })
+    }
+
+    public func response(
+        queue: DispatchQueue = .main,
+        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
+    ) -> Self {
+        let internalCompletionHandler: (DataResponse<Response, AFError>) -> Void = { response in
+            switch response.result {
+            case .success(let value):
+                completionHandler(.success(value))
+            case .failure(let error):
+                let err = HTTPError.external(error, request: response.request, response: response.response)
+                completionHandler(.failure(err))
+            }
+        }
+
+        return response(
+            queue: queue,
+            responseSerializer: ResponseSerializer(),
+            completionHandler: internalCompletionHandler
+        )
+    }
+}
 
 extension RequestConvertible where Self : UploadRequest {
 
@@ -79,7 +108,7 @@ extension RequestConvertible where Self : UploadRequest {
     }
 
     @discardableResult
-    func progress(
+    public func progress(
         queue: DispatchQueue = .main,
         progressHandler: @escaping ProgressHandler
     ) -> Self {
@@ -89,84 +118,13 @@ extension RequestConvertible where Self : UploadRequest {
     }
 }
 
-// MARK: - DataRequest
+extension RequestConvertible where Self : DownloadRequest {
 
-public extension RequestConvertible where Self : DataRequest {
-
-    var executeProgress: Progress {
-        return self.progress
+    public var executeProgress: Progress {
+        return self.downloadProgress
     }
 
-    func progress(
-        queue: DispatchQueue = .main,
-        progressHandler: @escaping InternalProgressHandler
-    ) -> Self {
-        return downloadProgress(closure: { progress in
-            progressHandler(progress)
-        })
-    }
-
-    func response(
-        queue: DispatchQueue = .main,
-        completionHandler: @escaping (Swift.Result<Response, HTTPError>) -> Void
-    ) -> Self {
-
-        let internalCompletionHandler: (DataResponse<Response>) -> Void = { response in
-            switch response.result {
-            case .success(let value):
-                completionHandler(.success(value))
-            case .failure(let error):
-                switch error {
-                case let err as HTTPError:
-                    completionHandler(.failure(err))
-                default:
-                    let err = HTTPError.external(error, request: response.request, response: response.response)
-                    completionHandler(.failure(err))
-                }
-            }
-        }
-
-        //swiftlint:disable:next line_length
-        let responseSerializer = DataResponseSerializer { (request, response, data, error) -> Alamofire.Result<Response> in
-
-            if let err = error {
-                switch err._code {
-                case NSURLErrorTimedOut:
-                    return .failure(HTTPError.timeout(request: request, response: response))
-                case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
-                    return .failure(HTTPError.connectionLost(request: request, response: response))
-                default:
-                    return .failure(HTTPError.external(err, request: request, response: response))
-                }
-            }
-
-            guard let validData = data, !validData.isEmpty else {
-                return .failure(HTTPError.emptyResponse(request: request, response: response))
-            }
-
-            let response = Response(request: request, response: response, data: validData)
-            return .success(response)
-        }
-
-        return response(
-            queue: queue,
-            responseSerializer: responseSerializer,
-            completionHandler: internalCompletionHandler
-        )
-    }
-}
-
-extension DataRequest : RequestConvertible {}
-
-// MARK: - DownloadRequest
-
-public extension RequestConvertible where Self : DownloadRequest {
-
-    var executeProgress: Progress {
-        return self.progress
-    }
-
-    func progress(
+    public func progress(
         queue: DispatchQueue = .main,
         progressHandler: @escaping InternalProgressHandler
     ) -> Self {
@@ -175,66 +133,29 @@ public extension RequestConvertible where Self : DownloadRequest {
         }
     }
 
-    func response(
+    public func response(
         queue: DispatchQueue = .main,
-        completionHandler: @escaping (Swift.Result<Response, HTTPError>) -> Void
+        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> Self {
-
-        let internalCompletionHandler: (DownloadResponse<Response>) -> Void = { response in
+        let internalCompletionHandler: (DownloadResponse<Response, AFError>) -> Void = { response in
             switch response.result {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                switch error {
-                case let err as HTTPError:
-                    completionHandler(.failure(err))
-                default:
-                    let err = HTTPError.external(error, request: response.request, response: response.response)
-                    completionHandler(.failure(err))
-                }
+                let err = HTTPError.external(error, request: response.request, response: response.response)
+                completionHandler(.failure(err))
             }
-        }
-
-        let responseSerializer = DownloadResponseSerializer { (request, response, url, error) -> Result<Response> in
-
-            if let err = error {
-                switch err._code {
-                case NSURLErrorTimedOut:
-                    return .failure(HTTPError.timeout(request: request, response: response))
-                case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
-                    return .failure(HTTPError.connectionLost(request: request, response: response))
-                default:
-                    return .failure(HTTPError.external(err, request: request, response: response))
-                }
-            }
-
-            guard let fileURL = url else {
-                return .failure(HTTPError.emptyResponse(request: request, response: response))
-            }
-
-            let data: Data
-            do {
-                data = try Data(contentsOf: fileURL)
-            } catch let err {
-                return .failure(HTTPError.external(err, request: request, response: response))
-            }
-
-            if data.isEmpty {
-                return .failure(HTTPError.emptyResponse(request: request, response: response))
-            }
-
-            let response = Response(request: request, response: response, data: data)
-            return.success(response)
         }
 
         return response(
             queue: queue,
-            responseSerializer: responseSerializer,
+            responseSerializer: ResponseSerializer(),
             completionHandler: internalCompletionHandler
         )
     }
 }
 
+extension DataRequest : RequestConvertible {}
 extension DownloadRequest : RequestConvertible {}
 
 // MARK: - TaskConvertible
@@ -245,13 +166,13 @@ public protocol TaskConvertible {
     var request: URLRequest? { get }
 
     /// 格式化取消网络请求
-    func cancel()
+    @discardableResult func cancel() -> Self
 
     /// 格式化暂停网络请求
-    func suspend()
+    @discardableResult func suspend() -> Self
 
     /// 格式化恢复网络请求
-    func resume()
+    @discardableResult func resume() -> Self
 }
 
 extension DataRequest : TaskConvertible {}
@@ -259,47 +180,32 @@ extension DownloadRequest : TaskConvertible {}
 
 // MARK: - DataResponseSerializer
 
-struct DataResponseSerializer : DataResponseSerializerProtocol {
-
-    typealias SerializedObject = Response
-    var serializeResponse: (URLRequest?, HTTPURLResponse?, Data?, Error?) -> Alamofire.Result<Response>
-
-    //swiftlint:disable:next line_length
-    public init(serializeResponse: @escaping (URLRequest?, HTTPURLResponse?, Data?, Error?) -> Alamofire.Result<Response>) {
-        self.serializeResponse = serializeResponse
-    }
-}
-
-// MARK: - DownloadResponseSerializer
-
-struct DownloadResponseSerializer : DownloadResponseSerializerProtocol {
+struct ResponseSerializer : ResponseSerializerProtocol {
 
     typealias SerializedObject = Response
 
-    var serializeResponse: (URLRequest?, HTTPURLResponse?, URL?, Error?) -> Alamofire.Result<Response>
+    func serialize(
+        request: URLRequest?,
+        response: HTTPURLResponse?,
+        data: Data?,
+        error: Error?
+    ) throws -> Response {
 
-    //swiftlint:disable:next line_length
-    public init(serializeResponse: @escaping (URLRequest?, HTTPURLResponse?, URL?, Error?) -> Alamofire.Result<Response>) {
-        self.serializeResponse = serializeResponse
-    }
-}
+        if let err = error {
+            switch err._code {
+            case NSURLErrorTimedOut:
+                throw HTTPError.timeout(request: request, response: response)
+            case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
+                throw HTTPError.connectionLost(request: request, response: response)
+            default:
+                throw HTTPError.external(err, request: request, response: response)
+            }
+        }
 
-// MARK: - Retrier
+        guard let validData = data, !validData.isEmpty else {
+            throw HTTPError.emptyResponse(request: request, response: response)
+        }
 
-public struct Retrier: Alamofire.RequestRetrier {
-
-    let plugins: [PluginType]
-
-    init (_ plugins: [PluginType]) {
-        self.plugins = plugins
-    }
-
-    public func should(
-        _ manager: SessionManager,
-        retry request: Alamofire.Request,
-        with error: Error,
-        completion: @escaping RequestRetryCompletion
-    ) {
-        plugins.forEach { $0.retry(error, completion: completion) }
+        return Response(request: request, response: response, data: validData)
     }
 }

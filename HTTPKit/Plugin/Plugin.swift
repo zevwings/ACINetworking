@@ -33,7 +33,7 @@ public protocol PluginType {
     func didComplete<R>(_ result: Result<Response, HTTPError>, request: R) where R: Request
 
     /// 网络请求需要自动重试
-    func retry(_ error: Error, completion: @escaping (Bool, TimeInterval) -> Void)
+    func retry(_ error: Error, completion: @escaping (RetryResult) -> Void)
 }
 
 // MARK: - Defaults
@@ -54,6 +54,6 @@ extension PluginType {
 
     public func didComplete<R>(_ result: Result<Response, HTTPError>, request: R) where R: Request {}
 
-    public func retry(_ error: Error, completion: @escaping (Bool, TimeInterval) -> Void) {}
+    public func retry(_ error: Error, completion: @escaping (RetryResult) -> Void) {}
 
 }

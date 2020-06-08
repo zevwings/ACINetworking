@@ -13,7 +13,7 @@ import Alamofire
 public protocol Builder {
 
     /// 处理`Request`，将`Request`处理构建成一个`Alamofire.Request`
-    func process<R>(request: R, manager: SessionManager, plugins: [PluginType]) throws -> Requestable where R: Request
+    func process<R>(request: R, session: Session, plugins: [PluginType]) throws -> Requestable where R: Request
 }
 
 // MARK: - RequestBuilder
@@ -25,9 +25,9 @@ public class RequestBuilder : Builder {
     /// 处理`Request`，将`Request`处理构建成一个`Alamofire.Request`
     public func process<R>(
         request: R,
-        manager: SessionManager,
+        session: Session,
         plugins: [PluginType]
-    ) throws -> Requestable where R : Request {
+    ) throws -> Requestable where R: Request {
 
         /// 通过插件和拦截器处理请求参数
         /// 错误类型：自定义错误
@@ -59,7 +59,7 @@ public class RequestBuilder : Builder {
             interceptor.willSend(urlRequest, request: request)
         }
 
-        return try buildAlamoRequest(request, urlRequest: urlRequest, manager: manager, plugins: plugins)
+        return try buildAlamoRequest(request, urlRequest: urlRequest, session: session, plugins: plugins)
     }
 
     /// 构建一个`UrlRequest`
@@ -90,49 +90,64 @@ public class RequestBuilder : Builder {
     private func buildAlamoRequest<R>(
         _ request: R,
         urlRequest: URLRequest,
-        manager: SessionManager,
+        session: Session,
         plugins: [PluginType]
     ) throws -> Requestable where R: Request {
 
-//        /// 生成Alamofire拦截器
-//        var plugins: [PluginType] = plugins
-//        if let interceptor = request.interceptor {
-//            plugins.append(interceptor)
-//        }
+        /// 生成Alamofire拦截器
+        var plugins: [PluginType] = plugins
+        if let interceptor = request.interceptor {
+            plugins.append(interceptor)
+        }
+
+        let retrier = Retrier(plugins)
+        let interceptor: Alamofire.Interceptor? = plugins.isEmpty ?
+            nil :
+            Alamofire.Interceptor(adapters: [], retriers: [retrier])
 
         /// 生成请求
-        var alamoRequest: Requestable?
-        var error: Error?
-
+        var alamofireRequest: Requestable
         switch request.content {
         case .requestPlain, .requestParameters:
-            alamoRequest = manager.request(urlRequest)
+            alamofireRequest = session.request(urlRequest, interceptor: interceptor)
         case .download(let destination), .downloadParameters(_, _, let destination):
-            alamoRequest = manager.download(urlRequest, to: destination)
+            alamofireRequest =  session.download(urlRequest, interceptor: interceptor, to: destination)
         case .uploadFile(let fileURL):
-            alamoRequest = manager.upload(fileURL, with: urlRequest)
+            alamofireRequest =  session.upload(fileURL, with: urlRequest, interceptor: interceptor)
         case .uploadFormData(let mutipartFormData), .uploadFormDataParameters(_, _, let mutipartFormData):
             let multipartFormData: (RequestMultipartFormData) -> Void = { formData in
                 formData.applyMoyaMultipartFormData(mutipartFormData)
             }
-            manager.upload(multipartFormData: multipartFormData, with: urlRequest, encodingCompletion: { result in
-                switch result {
-                case .success(let request, _, _):
-                    alamoRequest = request
-                case .failure(let err):
-                    alamoRequest = nil
-                    error = err
-                }
-            })
+            alamofireRequest = session.upload(
+                multipartFormData: multipartFormData,
+                with: urlRequest,
+                interceptor: interceptor
+            )
         }
 
-        if let alamoRequest = alamoRequest {
-            let validateStatusCode = request.validationType.statusCodes
-            return validateStatusCode.isEmpty ?
-                alamoRequest :
-                alamoRequest.validate(statusCode: validateStatusCode)
-        } else {
-            throw HTTPError.multipart(error: error, reqeuest: urlRequest)
-        }
+        let validateStatusCode = request.validationType.statusCodes
+        return validateStatusCode.isEmpty ?
+            alamofireRequest :
+            alamofireRequest.validate(statusCode: validateStatusCode)
+    }
+}
+
+// MARK: -
+
+public struct Retrier: RequestRetrier {
+
+    let plugins: [PluginType]
+
+    init (_ plugins: [PluginType]) {
+        self.plugins = plugins
+    }
+
+    public func retry(
+        _ request: Alamofire.Request,
+        for session: Session,
+        dueTo error: Error,
+        completion: @escaping (RetryResult) -> Void
+    ) {
+        plugins.forEach { $0.retry(error, completion: completion) }
     }
 }
