@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
   spec.name           = "HTTPKit.swift"
   spec.module_name    = "HTTPKit"
-  spec.version        = "2.0.0"
+  spec.version        = "2.1.0"
   spec.summary        = "A network layer base on Alamofire."
   spec.swift_version  = "5.1"
 
@@ -29,7 +29,7 @@ Pod::Spec.new do |spec|
   end
 
   spec.subspec "RxSwift" do |rx|
-    rx.source_files = "RxSupport/RxSupport.h", "RxSupport/**/*.swift"
+    rx.source_files = "RxHTTPKit/RxSupport.h", "RxHTTPKit/**/*.swift"
     rx.dependency "HTTPKit.swift/Core"
     rx.dependency "RxSwift"
   end
