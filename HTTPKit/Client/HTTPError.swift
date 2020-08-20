@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum HttpError : Error {
+public enum HTTPError : Error {
 
     /// 请求链接错误，不能拼接成正确的Url
     case invalidUrl(url: URL?, path: String)
@@ -41,7 +41,7 @@ public enum HttpError : Error {
 
 }
 
-extension HttpError : LocalizedError {
+extension HTTPError : LocalizedError {
 
     public var errorDescription: String? {
         switch self {
@@ -61,7 +61,7 @@ extension HttpError : LocalizedError {
     }
 }
 
-extension HttpError : CustomStringConvertible, CustomDebugStringConvertible {
+extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
 
     public var description: String {
         switch self {
@@ -93,7 +93,7 @@ extension HttpError : CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
-extension HttpError {
+extension HTTPError {
 
     func errorHandler(error: Error, defaultMessage message: String) -> String {
         if error is LocalizedError {
@@ -104,7 +104,7 @@ extension HttpError {
     }
 }
 
-extension HttpError {
+extension HTTPError {
 
     /// 获取到真实的Error
     public var error: Error {

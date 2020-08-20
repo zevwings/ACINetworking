@@ -1,6 +1,6 @@
 //
 //  Parameters.swift
-//  HttpClient
+//  HTTPClient
 //
 //  Created by zevwings on 2020/8/17.
 //  Copyright © 2020 zevwings. All rights reserved.

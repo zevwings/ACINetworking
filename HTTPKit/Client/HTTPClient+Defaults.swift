@@ -1,5 +1,5 @@
 //
-//  HttpClient+Defaults.swift
+//  HTTPClient+Defaults.swift
 //
 //  Created by zevwings on 2019/1/24.
 //  Copyright © 2019 zevwings. All rights reserved.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension HttpClient {
+extension HTTPClient {
 
     /// 默认的Alamofire.Session
     public class func defaultSession() -> Session {

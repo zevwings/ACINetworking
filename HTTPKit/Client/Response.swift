@@ -59,7 +59,7 @@ public extension Response {
     /// - Returns: 当前 Response
     func filter<R: RangeExpression>(statusCodes: R) throws -> Response where R.Bound == Int {
         guard statusCodes.contains(statusCode) else {
-            let error = HttpError.statusCode(request: request, statustCode: statusCode)
+            let error = HTTPError.statusCode(request: request, statustCode: statusCode)
             throw error
         }
         return self
@@ -91,11 +91,11 @@ public extension Response {
     /// - Returns: 图片对象
     func mapImage() throws -> Image {
         guard let image = Image(data: data) else {
-            let error = HttpError.cast(value: data, targetType: Image.self, request: request, response: response)
-            HttpLogger.log(.verbose, logType: .cast, error: error)
+            let error = HTTPError.cast(value: data, targetType: Image.self, request: request, response: response)
+            HTTPLogger.log(.verbose, logType: .cast, error: error)
             throw error
         }
-        HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: image)
+        HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: image)
         return image
     }
 
@@ -114,16 +114,16 @@ public extension Response {
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: options)
             if logVerbose {
-                HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: jsonObject)
+                HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: jsonObject)
             }
             return jsonObject
         } catch {
-            let error = HttpError.cast(value: data, targetType: Any.self, request: request, response: response)
+            let error = HTTPError.cast(value: data, targetType: Any.self, request: request, response: response)
             if data.count < 1 && !failsOnEmptyData {
                 return NSNull()
             }
             if logVerbose {
-                HttpLogger.log(.verbose, logType: .cast, error: error)
+                HTTPLogger.log(.verbose, logType: .cast, error: error)
             }
             throw error
         }
@@ -137,19 +137,19 @@ public extension Response {
         if let keyPath = keyPath {
             let jsonDictionary = try mapJSON() as? NSDictionary
             guard let string = jsonDictionary?.value(forKeyPath: keyPath) as? String else {
-                let error = HttpError.cast(value: data, targetType: String.self, request: request, response: response)
-                HttpLogger.log(.verbose, logType: .cast, error: error)
+                let error = HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
+                HTTPLogger.log(.verbose, logType: .cast, error: error)
                 throw error
             }
-            HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
+            HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
             return string
         } else {
             guard let string = String(data: data, encoding: .utf8) else {
-                let error = HttpError.cast(value: data, targetType: String.self, request: request, response: response)
-                HttpLogger.log(.verbose, logType: .cast, error: error)
+                let error = HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
+                HTTPLogger.log(.verbose, logType: .cast, error: error)
                 throw error
             }
-            HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
+            HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
             return string
         }
     }

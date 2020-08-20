@@ -34,7 +34,7 @@ public class Builder : BuilderType {
     ) throws -> (urlRequest: URLRequest, alamo: Requestable) where API: ApiManager {
 
         guard let url = URL(string: api.route.path, relativeTo: api.service.url) else {
-            throw HttpError.invalidUrl(url: api.service.url, path: api.route.path)
+            throw HTTPError.invalidUrl(url: api.service.url, path: api.route.path)
         }
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = api.route.method.rawValue
@@ -58,7 +58,7 @@ public class Builder : BuilderType {
                 urlRequest = try encoding.encode(urlRequest, with: parameters)
             } catch {
                 /// 错误类型：HTTPError.encode
-                throw HttpError.encode(parameters: parameters, encoding: encoding, error: error)
+                throw HTTPError.encode(parameters: parameters, encoding: encoding, error: error)
             }
         }
 

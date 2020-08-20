@@ -51,13 +51,13 @@ public protocol Client : AnyObject {
         api: API,
         callbackQueue: DispatchQueue,
         progressHandler: ((ProgressResponse) -> Void)?,
-        completionHandler: @escaping (Result<Response, HttpError>) -> Void
+        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> TaskType?
 }
 
 // MARK: - HttpClient
 
-public final class HttpClient<API: ApiManager> : Client {
+public final class HTTPClient<API: ApiManager> : Client {
 
     let session: Session
     let plugins: [PluginType]
@@ -65,7 +65,7 @@ public final class HttpClient<API: ApiManager> : Client {
 
     /// 初始化方法
     public init(
-        session: Session = HttpClient.defaultSession(),
+        session: Session = HTTPClient.defaultSession(),
         plugins: [PluginType] = [],
         builder: BuilderType = Builder()
     ) {
@@ -86,7 +86,7 @@ public final class HttpClient<API: ApiManager> : Client {
         api: API,
         callbackQueue: DispatchQueue = .main,
         progressHandler: ((ProgressResponse) -> Void)? = nil,
-        completionHandler: @escaping (Result<Response, HttpError>) -> Void
+        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> TaskType? {
 
         /// 构建Alamofire请求
@@ -94,14 +94,14 @@ public final class HttpClient<API: ApiManager> : Client {
         do {
             let result = try builder.process(api: api, session: session, plugins: plugins)
             alamoRequest = result.alamo
-            HttpLogger.log(.info, logType: .request, urlRequest: result.urlRequest)
-        } catch let error as HttpError {
-            HttpLogger.log(.error, logType: .request, error: error)
+            HTTPLogger.log(.info, logType: .request, urlRequest: result.urlRequest)
+        } catch let error as HTTPError {
+            HTTPLogger.log(.error, logType: .request, error: error)
             completionHandler(.failure(error))
             return nil
         } catch let error {
-            let err = HttpError.underlying(error, request: nil, response: nil)
-            HttpLogger.log(.error, logType: .request, error: err)
+            let err = HTTPError.underlying(error, request: nil, response: nil)
+            HTTPLogger.log(.error, logType: .request, error: err)
             completionHandler(.failure(err))
             return nil
         }
@@ -121,7 +121,7 @@ public final class HttpClient<API: ApiManager> : Client {
         )
 
         /// 处理返回结果
-        let internalCompletionHandler: ((Result<Response, HttpError>) -> Void) = { result in
+        let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
 
             self.plugins.forEach { $0.didReceive(api: api, result: result) }
 
@@ -151,14 +151,14 @@ public final class HttpClient<API: ApiManager> : Client {
                     }
 
                     self.plugins.forEach { $0.didComplete(api: api, result: .success(response)) }
-                    HttpLogger.log(.info, logType: .response, urlRequest: response.request, value: response)
+                    HTTPLogger.log(.info, logType: .response, urlRequest: response.request, value: response)
                     completionHandler(.success(response))
-                } catch let error as HttpError {
-                    HttpLogger.log(.error, logType: .response, error: error, value: response)
+                } catch let error as HTTPError {
+                    HTTPLogger.log(.error, logType: .response, error: error, value: response)
                     completionHandler(.failure(error))
                 } catch let error {
-                    let err = HttpError.underlying(error, request: response.request, response: response.response)
-                    HttpLogger.log(.error, logType: .response, error: err, value: response)
+                    let err = HTTPError.underlying(error, request: response.request, response: response.response)
+                    HTTPLogger.log(.error, logType: .response, error: err, value: response)
                     completionHandler(.failure(err))
                 }
             case .failure(let error):

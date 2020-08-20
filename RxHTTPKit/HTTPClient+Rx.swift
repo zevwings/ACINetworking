@@ -10,7 +10,7 @@ import RxSwift
 import HTTPKit
 #endif
 
-extension HttpClient: ReactiveCompatible {}
+extension HTTPClient: ReactiveCompatible {}
 
 public extension Reactive where Base: Client {
 

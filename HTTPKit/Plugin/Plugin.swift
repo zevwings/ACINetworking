@@ -27,10 +27,10 @@ public protocol PluginType {
     func process<API>(api: API, progress: Progress) where API: ApiManager
 
     /// 网络请求收到结果
-    func didReceive<API>(api: API, result: Result<Response, HttpError>) where API: ApiManager
+    func didReceive<API>(api: API, result: Result<Response, HTTPError>) where API: ApiManager
 
     /// 经过Intercepter， Transformer处理之后最终获取的结果
-    func didComplete<API>(api: API, result: Result<Response, HttpError>) where API: ApiManager
+    func didComplete<API>(api: API, result: Result<Response, HTTPError>) where API: ApiManager
 
     /// 网络请求需要自动重试
     func retry<API>(api: API, error: Error, completion: @escaping (RetryResult) -> Void) where API: ApiManager
@@ -60,11 +60,11 @@ extension PluginType {
 
     }
 
-    public func didReceive<API>(api: API, result: Result<Response, HttpError>) where API: ApiManager {
+    public func didReceive<API>(api: API, result: Result<Response, HTTPError>) where API: ApiManager {
 
     }
 
-    public func didComplete<API>(api: API, result: Result<Response, HttpError>) where API: ApiManager {
+    public func didComplete<API>(api: API, result: Result<Response, HTTPError>) where API: ApiManager {
 
     }
 

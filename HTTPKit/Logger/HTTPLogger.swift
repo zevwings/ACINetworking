@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct HttpLogger {
+public struct HTTPLogger {
 
     public enum LogLevel : Int {
         case verbose
@@ -17,7 +17,7 @@ public struct HttpLogger {
         case none
     }
 
-    public static var logLevel: HttpLogger.LogLevel = .none
+    public static var logLevel: HTTPLogger.LogLevel = .none
 
     public static func error(_ items: Any..., separator: String = " ", terminator: String = "\n") {
         log(.error, items: items, separator: separator, terminator: terminator)
@@ -32,14 +32,14 @@ public struct HttpLogger {
     }
 
     public static func log(_ logLevel: LogLevel, items: Any..., separator: String = " ", terminator: String = "\n") {
-        if HttpLogger.logLevel.rawValue <= logLevel.rawValue {
+        if HTTPLogger.logLevel.rawValue <= logLevel.rawValue {
             let description = items.map { String(describing: $0) }.joined(separator: separator)
             print(description, separator: separator, terminator: terminator)
         }
     }
 }
 
-extension HttpLogger {
+extension HTTPLogger {
 
     public enum LogType {
         case request
@@ -58,7 +58,7 @@ extension HttpLogger {
         _ logLevel: LogLevel,
         logType: LogType,
         urlRequest: URLRequest? = nil,
-        error: HttpError? = nil,
+        error: HTTPError? = nil,
         value: Any? = nil
     ) {
         var description: String = ""
@@ -115,7 +115,7 @@ extension HttpLogger {
     }
 }
 
-extension HttpLogger.LogType {
+extension HTTPLogger.LogType {
 
     var successTitle: String {
         switch self {
