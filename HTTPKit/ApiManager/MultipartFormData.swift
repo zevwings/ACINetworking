@@ -68,11 +68,13 @@ extension RequestMultipartFormData {
         length: UInt64,
         bodyPart: MultipartFormData
     ) {
-        append(stream,
-               withLength: length,
-               name: bodyPart.name,
-               fileName: bodyPart.fileName ?? "",
-               mimeType: bodyPart.mimeType ?? "")
+        append(
+            stream,
+            withLength: length,
+            name: bodyPart.name,
+            fileName: bodyPart.fileName ?? "",
+            mimeType: bodyPart.mimeType ?? ""
+        )
     }
 
     func applyMoyaMultipartFormData(_ multipartBody: [MultipartFormData]) {

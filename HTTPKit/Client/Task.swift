@@ -7,21 +7,21 @@
 
 import Foundation
 
-public protocol Task {
+public protocol TaskType {
 
     var isCancelled: Bool { get }
 
     /// 开始/恢复网络请求
     func resume()
 
-    /// 暂停网络请求
+    /// 暂停网络请求，仅`DownloadRequest`使用
     func suspend()
 
     /// 取消网络请求
     func cancel()
 }
 
-public final class HTTPTask : Task {
+public final class Task : TaskType {
 
     public typealias CancelAction = () -> Void
 
@@ -61,7 +61,7 @@ public final class HTTPTask : Task {
     }
 }
 
-extension HTTPTask : CustomStringConvertible, CustomDebugStringConvertible {
+extension Task : CustomStringConvertible, CustomDebugStringConvertible {
 
     public var description: String {
         return String(describing: request.request)

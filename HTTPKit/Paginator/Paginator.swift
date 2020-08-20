@@ -7,10 +7,7 @@
 
 import Foundation
 
-public protocol Paginator : AnyObject {
-
-    /// 从返回值中获取数组元素对应的Key
-    var elementKey: String { get }
+public protocol Paginator {
 
     /// 当前页码，默认为0
     var index: Int { get set }
@@ -31,22 +28,5 @@ public protocol Paginator : AnyObject {
     func next() -> Int
 
     /// 更新分页索引下标
-    func updateIndex(_ data: Data) throws -> Data
-}
-
-public extension Paginator {
-
-    /// 重置下标
-    @discardableResult
-    func reset() -> Int {
-        index = 0
-        return index
-    }
-
-    /// 下一页
-    @discardableResult
-    func next() -> Int {
-        index += 1
-        return index
-    }
+    func updateIndex(_ data: Data) throws
 }

@@ -1,5 +1,5 @@
 //
-//  HTTPClient.swift
+//  HttpClient.swift
 //
 //  Created by zevwings on 2018/12/29.
 //  Copyright © 2018 zevwings. All rights reserved.
@@ -7,17 +7,67 @@
 
 import Foundation
 
-public final class HTTPClient<R: Request> : Client {
+// MARK: - ProgressResponse
+public struct ProgressResponse {
+
+    public let response: Response?
+    public let progressObject: Progress?
+
+    public init(progress: Progress? = nil, response: Response? = nil) {
+        self.progressObject = progress
+        self.response = response
+    }
+
+    public var progress: Double {
+        if completed {
+            return 1.0
+        } else if let progressObject = progressObject, progressObject.totalUnitCount > 0 {
+            return progressObject.fractionCompleted
+        } else {
+            return 0.0
+        }
+    }
+
+    public var completed: Bool {
+        return response != nil
+    }
+}
+
+// MARK: - Client
+
+public protocol Client : AnyObject {
+
+    associatedtype API: ApiManager
+
+    /// 发送一个网络请求
+    ///
+    /// - Parameters:
+    ///   - api: 提供请求的 @see ApiManager
+    ///   - callbackQueue: 回调线程
+    ///   - progressHandler: 进度回调
+    ///   - completionHandler: 进度回调
+    /// - Returns: 请求任务
+    func request(
+        api: API,
+        callbackQueue: DispatchQueue,
+        progressHandler: ((ProgressResponse) -> Void)?,
+        completionHandler: @escaping (Result<Response, HttpError>) -> Void
+    ) -> TaskType?
+}
+
+// MARK: - HttpClient
+
+public final class HttpClient<API: ApiManager> : Client {
 
     let session: Session
     let plugins: [PluginType]
-    let builder: Builder
+    let builder: BuilderType
 
     /// 初始化方法
     public init(
-        session: Session = HTTPClient.defaultSession(),
+        session: Session = HttpClient.defaultSession(),
         plugins: [PluginType] = [],
-        builder: Builder = RequestBuilder()
+        builder: BuilderType = Builder()
     ) {
         self.session = session
         self.plugins = plugins
@@ -33,43 +83,33 @@ public final class HTTPClient<R: Request> : Client {
     /// - Returns: 请求任务
     //swiftlint:disable:next function_body_length
     @discardableResult public func request(
-        request: R,
+        api: API,
         callbackQueue: DispatchQueue = .main,
         progressHandler: ((ProgressResponse) -> Void)? = nil,
-        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
-    ) -> Task? {
-
-        /// 设置重试
-//        manager.retrier = request.retrier
+        completionHandler: @escaping (Result<Response, HttpError>) -> Void
+    ) -> TaskType? {
 
         /// 构建Alamofire请求
         var alamoRequest: Requestable
         do {
-            alamoRequest = try builder.process(request: request, session: session, plugins: plugins)
-            HTTPLogger.request(
-                .debug,
-                urlRequest: alamoRequest.request
-            )
-        } catch let error as HTTPError {
-            HTTPLogger.failure(.verbose, error: error)
+            let result = try builder.process(api: api, session: session, plugins: plugins)
+            alamoRequest = result.alamo
+            HttpLogger.log(.info, logType: .request, urlRequest: result.urlRequest)
+        } catch let error as HttpError {
+            HttpLogger.log(.error, logType: .request, error: error)
             completionHandler(.failure(error))
             return nil
         } catch let error {
-            let err = HTTPError.underlying(error, request: nil, response: nil)
-            HTTPLogger.failure(.verbose, error: err)
+            let err = HttpError.underlying(error, request: nil, response: nil)
+            HttpLogger.log(.error, logType: .request, error: err)
             completionHandler(.failure(err))
             return nil
         }
 
         /// 处理进度
-
         let internalProgressHandler: InternalProgressHandler = { progress in
             /// 通过插件和拦截器处理请求进度
-            self.plugins.forEach { $0.process(progress, request: request) }
-            if let interceptor = request.interceptor {
-                interceptor.process(progress, request: request)
-            }
-
+            self.plugins.forEach { $0.process(api: api, progress: progress) }
             callbackQueue.async {
                 progressHandler?(ProgressResponse(progress: progress))
             }
@@ -81,17 +121,9 @@ public final class HTTPClient<R: Request> : Client {
         )
 
         /// 处理返回结果
+        let internalCompletionHandler: ((Result<Response, HttpError>) -> Void) = { result in
 
-        let internalCompletionHandler: ((Result<Response, HTTPError>) -> Void) = { result in
-            HTTPLogger.response(
-                .debug,
-                urlRequest: alamoRequest.request,
-                result: result
-            )
-            self.plugins.forEach { $0.didReceive(result, request: request) }
-            if let interceptor = request.interceptor {
-                interceptor.didReceive(result, request: request)
-            }
+            self.plugins.forEach { $0.didReceive(api: api, result: result) }
 
             if let progressHandler = progressHandler {
                 let value = try? result.get()
@@ -103,37 +135,30 @@ public final class HTTPClient<R: Request> : Client {
                 do {
                     var response = response
                     // 通过插件和拦截器处理返回结果
-                    response = try self.plugins.reduce(response) { try $1.intercept(response: $0) }
-                    if let interceptor = request.interceptor {
-                        // 错误类型：自定义错误
-                        response = try interceptor.intercept(response: response)
-                    }
+                    response = try self.plugins.reduce(response) { try $1.intercept(api: api, response: $0) }
                     var data = response.data
-                    // 通过`Transformer`对返回数据进行数据处理
-                    if let transformer = request.transformer {
-                        // 错误类型：自定义错误
-                        data = try transformer.transform(data)
-                    }
+
                     // 当`Request`实现`RequestPaginator`协议时，进行分页相关操作并对数据进行转换
-                    if let paginator = request.paginator {
-                        // 错误类型：HTTP.external
-                        data = try paginator.updateIndex(data)
+                    // 错误类型：自定义错误
+                    if let paginator = api.paginator {
+                        try paginator.updateIndex(data)
+                    }
+                    // 通过`Transformer`对返回数据进行数据处理
+                    // 错误类型：自定义错误
+                    if let transformer = api.transformer {
+                        data = try transformer.transform(data)
+                        response.update(data)
                     }
 
-                    response.update(data)
-
-                    self.plugins.forEach { $0.didComplete(.success(response), request: request) }
-                    if let interceptor = request.interceptor {
-                        interceptor.didComplete(.success(response), request: request)
-                    }
-
+                    self.plugins.forEach { $0.didComplete(api: api, result: .success(response)) }
+                    HttpLogger.log(.info, logType: .response, urlRequest: response.request, value: response)
                     completionHandler(.success(response))
-                } catch let error as HTTPError {
-                    HTTPLogger.failure(.debug, error: error)
+                } catch let error as HttpError {
+                    HttpLogger.log(.error, logType: .response, error: error, value: response)
                     completionHandler(.failure(error))
                 } catch let error {
-                    let err = HTTPError.underlying(error, request: response.request, response: response.response)
-                    HTTPLogger.failure(.debug, error: err)
+                    let err = HttpError.underlying(error, request: response.request, response: response.response)
+                    HttpLogger.log(.error, logType: .response, error: err, value: response)
                     completionHandler(.failure(err))
                 }
             case .failure(let error):
@@ -147,8 +172,7 @@ public final class HTTPClient<R: Request> : Client {
         )
 
         /// 生成 Tasks
-
-        let task = HTTPTask(request: alamoRequest)
+        let task = Task(request: alamoRequest)
         task.resume()
         return task
     }

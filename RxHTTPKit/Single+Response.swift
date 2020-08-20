@@ -5,7 +5,6 @@
 //  Copyright © 2019 zevwings. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 #if !COCOAPODS
 import HTTPKit
@@ -29,7 +28,7 @@ public extension PrimitiveSequence where Trait == SingleTrait, Element == Respon
         return flatMap { .just(try $0.filterSuccessfulStatusAndRedirectCodes()) }
     }
 
-    func mapImage() -> Single<UIImage> {
+    func mapImage() -> Single<Image> {
         return flatMap { .just(try $0.mapImage()) }
     }
 
@@ -39,13 +38,5 @@ public extension PrimitiveSequence where Trait == SingleTrait, Element == Respon
 
     func mapString(atKeyPath keyPath: String? = nil) -> Single<String> {
         return flatMap { .just(try $0.mapString(atKeyPath: keyPath)) }
-    }
-
-    func mapObject<C: Codable>(
-        to type: C.Type,
-        decoder: JSONDecoder = JSONDecoder(),
-        atKeyPath keyPath: String? = nil
-    ) -> Single<C> {
-        return flatMap { .just(try $0.mapObject(to: type, decoder: decoder, atKeyPath: keyPath)) }
     }
 }

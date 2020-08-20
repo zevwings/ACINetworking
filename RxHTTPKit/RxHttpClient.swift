@@ -1,41 +1,39 @@
 //
-//  HTTPClient+Rx.swift
+//  RxHttpEngine.swift
 //
 //  Created by zevwings on 2019/1/29.
 //  Copyright © 2019 zevwings. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 #if !COCOAPODS
 import HTTPKit
 #endif
 
-extension HTTPClient: ReactiveCompatible {}
+extension HttpClient: ReactiveCompatible {}
 
 public extension Reactive where Base: Client {
 
     @discardableResult
     func request(
-        _ request: Base.R,
+        _ api: Base.API,
         callbackQueue: DispatchQueue = .main
     ) -> Single<Response> {
 
         return Single.create(subscribe: { [weak base] single -> Disposable in
-
             let task = base?.request(
-                request: request,
-                callbackQueue: callbackQueue,
+                api: api,
+                callbackQueue:
+                callbackQueue,
                 progressHandler: nil,
                 completionHandler: { result in
                     switch result {
-                    case .success(let value):
-                        single(.success(value))
-                    case .failure(let error):
+                    case let .success(response):
+                        single(.success(response))
+                    case let .failure(error):
                         single(.error(error))
                     }
             })
-
             return Disposables.create {
                 task?.cancel()
             }
@@ -44,7 +42,7 @@ public extension Reactive where Base: Client {
 
     @discardableResult
     func requestWithProgress(
-        _ request: Base.R,
+        _ api: Base.API,
         callbackQueue: DispatchQueue = .main
     ) -> Observable<ProgressResponse> {
 
@@ -55,8 +53,9 @@ public extension Reactive where Base: Client {
         }
 
         let response: Observable<ProgressResponse> = Observable.create { [weak base] observer in
+            
             let task = base?.request(
-                request: request,
+                api: api,
                 callbackQueue: callbackQueue,
                 progressHandler: progressHandler(observer),
                 completionHandler: { result in

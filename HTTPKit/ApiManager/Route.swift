@@ -17,22 +17,25 @@ public enum Route {
     case patch(String)
     case trace(String)
     case connect(String)
+}
 
-    public var path: String {
+extension Route {
+
+    var path: String {
         switch self {
-        case .get(let path): return path
-        case .post(let path): return path
-        case .put(let path): return path
-        case .delete(let path): return path
-        case .options(let path): return path
-        case .head(let path): return path
-        case .patch(let path): return path
-        case .trace(let path): return path
-        case .connect(let path): return path
+        case let .get(path): return path
+        case let .post(path): return path
+        case let .put(path): return path
+        case let .delete(path): return path
+        case let .options(path): return path
+        case let .head(path): return path
+        case let .patch(path): return path
+        case let .trace(path): return path
+        case let .connect(path): return path
         }
     }
 
-    public var method: HTTPMethod {
+    var method: HTTPMethod {
         switch self {
         case .get: return .get
         case .post: return .post

@@ -7,16 +7,16 @@
 
 import Foundation
 
-public enum HTTPError : Error {
+public enum HttpError : Error {
 
     /// 请求链接错误，不能拼接成正确的Url
-    case invalidUrl(url: URL, path: String)
+    case invalidUrl(url: URL?, path: String)
 
     /// 解析参数错误
-    case encode(parameters: Parameters?, encoding: ParameterEncoding, error: Error)
+    case encode(parameters: [String: Any]?, encoding: ParameterEncoding, error: Error)
 
     /// 构建 Multi-part 网络请求失败
-    case multipart(error: Error?, reqeuest: URLRequest)
+    case multipart(reqeuest: URLRequest, error: Error?)
 
     /// 服务器返回数据为空
     case emptyResponse(request: URLRequest?, response: HTTPURLResponse?)
@@ -41,7 +41,7 @@ public enum HTTPError : Error {
 
 }
 
-extension HTTPError : LocalizedError {
+extension HttpError : LocalizedError {
 
     public var errorDescription: String? {
         switch self {
@@ -61,7 +61,7 @@ extension HTTPError : LocalizedError {
     }
 }
 
-extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
+extension HttpError : CustomStringConvertible, CustomDebugStringConvertible {
 
     public var description: String {
         switch self {
@@ -73,8 +73,8 @@ extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
             return "无法成功构建Multi-part网络请求"
         case .emptyResponse:
             return "数据为空或者无法转换为JSON数据类型"
-        case .cast:
-            return "数据为空或者无法转换为目标数据类型"
+        case let .cast(_, targetType, _, _):
+            return "数据为空或者无法转换为\(targetType)数据类型"
         case .statusCode:
             return "服务器返回StatusCode不为2xx"
         case .timeout:
@@ -93,7 +93,7 @@ extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
     }
 }
 
-extension HTTPError {
+extension HttpError {
 
     func errorHandler(error: Error, defaultMessage message: String) -> String {
         if error is LocalizedError {
@@ -104,12 +104,12 @@ extension HTTPError {
     }
 }
 
-extension HTTPError {
+extension HttpError {
 
     /// 获取到真实的Error
     public var error: Error {
         switch self {
-        case .multipart(let error, _):
+        case let .multipart(_, error):
             if let error = error {
                 return error
             } else {
@@ -128,7 +128,7 @@ extension HTTPError {
         switch self {
         case .invalidUrl, .encode:
             return nil
-        case .multipart(_, let request):
+        case let .multipart(request, _):
             return request
         case .emptyResponse(let request, _):
             return request
@@ -151,7 +151,7 @@ extension HTTPError {
     public var url: String? {
         switch self {
         case .invalidUrl(let url, let path):
-            return String(format: "%@ ----> %@", path, url.absoluteString)
+            return String(format: "%@ ----> %@", path, url?.absoluteString ?? "")
         default:
             return request?.url?.absoluteString
         }

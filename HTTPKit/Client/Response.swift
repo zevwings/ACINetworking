@@ -54,161 +54,103 @@ extension Response : Equatable {
 
 public extension Response {
 
+    ///  过滤 Status Code 如果不为指定范围的 Code 时抛出异常
+    /// - Throws: HttpError
+    /// - Returns: 当前 Response
     func filter<R: RangeExpression>(statusCodes: R) throws -> Response where R.Bound == Int {
         guard statusCodes.contains(statusCode) else {
-            let error = HTTPError.statusCode(request: request, statustCode: statusCode)
-            HTTPLogger.failure(.verbose, error: error)
+            let error = HttpError.statusCode(request: request, statustCode: statusCode)
             throw error
         }
         return self
     }
 
+    ///  过滤 Status Code 如果不为指定的 Code 时抛出异常
+    /// - Throws: HttpError
+    /// - Returns: 当前 Response
     func filter(statusCode: Int) throws -> Response {
         return try filter(statusCodes: statusCode...statusCode)
     }
 
+    ///  过滤 Status Code 如果不为正确的 Code 时抛出异常
+    /// - Throws: HttpError
+    /// - Returns: 当前 Response
     func filterSuccessfulStatusCodes() throws -> Response {
         return try filter(statusCodes: 200...299)
     }
 
+    ///  过滤 Status Code 如果不为正确或重定向 Code 时抛出异常
+    /// - Throws: HttpError
+    /// - Returns: 当前 Response
     func filterSuccessfulStatusAndRedirectCodes() throws -> Response {
         return try filter(statusCodes: 200...399)
     }
 
+    ///  将数据转换为图片
+    /// - Throws: HttpError
+    /// - Returns: 图片对象
     func mapImage() throws -> Image {
         guard let image = Image(data: data) else {
-            let error = HTTPError.cast(
-                value: data,
-                targetType: Image.self,
-                request: request,
-                response: response
-            )
-            HTTPLogger.failure(.verbose, error: error)
+            let error = HttpError.cast(value: data, targetType: Image.self, request: request, response: response)
+            HttpLogger.log(.verbose, logType: .cast, error: error)
             throw error
         }
-        HTTPLogger.transform(.verbose, targetType: Image.self, request: request, extra: image)
+        HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: image)
         return image
     }
 
+    /// 将数据转换为 JSON 对象
+    /// - Parameters:
+    ///   - options: JSONSerialization.ReadingOptions
+    ///   - failsOnEmptyData: 错误时是否，返回一个 NSNull 对象
+    ///   - logVerbose: 是否打印日志，避免多次打印
+    /// - Throws: HTTPError
+    /// - Returns: JSON 对象
     func mapJSON(
         options: JSONSerialization.ReadingOptions = [.allowFragments],
         failsOnEmptyData: Bool = true,
-        logVerbose: Bool = true
+        logVerbose: Bool = false
     ) throws -> Any {
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: options)
             if logVerbose {
-                HTTPLogger.transform(.verbose, targetType: Any.self, request: request, extra: jsonObject)
+                HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: jsonObject)
             }
             return jsonObject
         } catch {
-            let error = HTTPError.cast(
-                value: data,
-                targetType: Image.self,
-                request: request,
-                response: response
-            )
-            HTTPLogger.failure(.verbose, error: error)
+            let error = HttpError.cast(value: data, targetType: Any.self, request: request, response: response)
             if data.count < 1 && !failsOnEmptyData {
                 return NSNull()
             }
+            if logVerbose {
+                HttpLogger.log(.verbose, logType: .cast, error: error)
+            }
             throw error
         }
     }
 
+    /// 将数据转换为字符串
+    /// - Parameter keyPath: KeyPath
+    /// - Throws: HttpError
+    /// - Returns: 字符串
     func mapString(atKeyPath keyPath: String? = nil) throws -> String {
         if let keyPath = keyPath {
-            guard
-                let jsonDictionary = try mapJSON(logVerbose: false) as? NSDictionary,
-                let string = jsonDictionary.value(forKeyPath: keyPath) as? String else {
-                    let error = HTTPError.cast(
-                        value: data,
-                        targetType: String.self,
-                        request: request,
-                        response: response
-                    )
-                    HTTPLogger.failure(.verbose, error: error)
-                    throw error
+            let jsonDictionary = try mapJSON() as? NSDictionary
+            guard let string = jsonDictionary?.value(forKeyPath: keyPath) as? String else {
+                let error = HttpError.cast(value: data, targetType: String.self, request: request, response: response)
+                HttpLogger.log(.verbose, logType: .cast, error: error)
+                throw error
             }
-            HTTPLogger.transform(.verbose, targetType: String.self, request: request, extra: string)
+            HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
             return string
         } else {
             guard let string = String(data: data, encoding: .utf8) else {
-                let error = HTTPError.cast(
-                    value: data,
-                    targetType: String.self,
-                    request: request,
-                    response: response
-                )
-                HTTPLogger.failure(.verbose, error: error)
+                let error = HttpError.cast(value: data, targetType: String.self, request: request, response: response)
+                HttpLogger.log(.verbose, logType: .cast, error: error)
                 throw error
             }
-            HTTPLogger.transform(.verbose, targetType: String.self, request: request, extra: string)
+            HttpLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
             return string
         }
-    }
-
-    func mapObject<C: Codable>(
-        to type: C.Type,
-        decoder: JSONDecoder = JSONDecoder(),
-        atKeyPath keyPath: String? = nil
-    ) throws -> C {
-        do {
-            var value: C
-            if let keyPath = keyPath {
-                guard
-                    let jsonDictionary = try mapJSON(logVerbose: false) as? NSDictionary,
-                    let jsonObject = jsonDictionary.value(forKeyPath: keyPath) else {
-                        let error = HTTPError.cast(
-                            value: data,
-                            targetType: type,
-                            request: request,
-                            response: response
-                        )
-                        HTTPLogger.failure(.verbose, error: error)
-                        throw error
-                }
-                let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
-                value = try decoder.decode(type, from: jsonData)
-            } else {
-                value = try decoder.decode(type, from: data)
-            }
-            HTTPLogger.transform(.verbose, targetType: type, request: request, extra: value)
-            return value
-        } catch {
-            let error = HTTPError.cast(
-                value: data,
-                targetType: type,
-                request: request,
-                response: response
-            )
-            HTTPLogger.failure(.verbose, error: error)
-            throw error
-        }
-    }
-}
-
-public struct ProgressResponse {
-
-    public let response: Response?
-    public let progressObject: Progress?
-
-    public init(progress: Progress? = nil, response: Response? = nil) {
-        self.progressObject = progress
-        self.response = response
-    }
-
-    public var progress: Double {
-        if completed {
-            return 1.0
-        } else if let progressObject = progressObject, progressObject.totalUnitCount > 0 {
-            return progressObject.fractionCompleted
-        } else {
-            return 0.0
-        }
-    }
-
-    public var completed: Bool {
-        return response != nil
     }
 }

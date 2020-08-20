@@ -1,5 +1,5 @@
 //
-//  Requestable.swift
+//  ApiManager.swift
 //
 //  Created by zevwings on 2018/12/29.
 //  Copyright © 2018 zevwings. All rights reserved.
@@ -7,7 +7,42 @@
 
 import Foundation
 
-public protocol Request {
+// MARK: - Serviceable
+
+public protocol Serviceable {
+
+    /// 服务器基础路径
+    var baseURL: String { get }
+}
+
+extension Serviceable {
+
+    var url: URL {
+        guard let url = URL(string: baseURL) else {
+            fatalError("无法转化为正确的URL")
+        }
+        return url
+    }
+}
+
+// MARK: - Transformer
+
+public protocol Transformer {
+
+    /// 将服务器返回数据转换为业务数据
+    ///
+    /// - Parameters:
+    ///   - data: 转换前的数据
+    ///   - request: 请求
+    /// - Returns: 转换后的数据
+    /// - Throws: 转换异常
+    func transform(_ data: Data) throws -> Data
+
+}
+
+// MARK: -
+
+public protocol ApiManager {
 
     /// 服务器
     associatedtype Service: Serviceable
@@ -27,9 +62,6 @@ public protocol Request {
     /// 校验类型，校验返回的 status code 是否为正确的值，默认校验正确和重定向code
     var validationType: ValidationType { get }
 
-    /// 请求拦截器
-    var interceptor: RequestInterceptor? { get }
-
     /// 分页参数
     var paginator: Paginator? { get }
 
@@ -38,15 +70,11 @@ public protocol Request {
 
 }
 
-// MARK: - Defaults
-
-extension Request {
+extension ApiManager {
 
     public var headerFields: [String: String] { return [:] }
 
     public var validationType: ValidationType { return .none }
-
-    public var interceptor: RequestInterceptor? { return nil }
 
     public var paginator: Paginator? { return nil }
 
@@ -56,7 +84,7 @@ extension Request {
 
 // MARK: - Equatable
 
-extension Equatable where Self : Request {
+extension Equatable where Self : ApiManager {
 
     /**
      判断两个请求是否相等，只需要在Request的实现中添加Equatable即可，
@@ -68,15 +96,4 @@ extension Equatable where Self : Request {
             lhs.route.path == rhs.route.path &&
             lhs.route.method.rawValue == rhs.route.method.rawValue
     }
-}
-
-// MARK: - RequestInterceptor
-
-/// 请求拦截，针对于实现`Interceptor`的请求
-
-public protocol RequestInterceptor : PluginType {}
-
-extension Request where Self : RequestInterceptor {
-
-    public var interceptor: RequestInterceptor? { return self }
 }

@@ -1,11 +1,10 @@
 //
-//  HTTPClient+Alamofire.swift
+//  HttpClient+Alamofire.swift
 //
 //  Created by zevwings on 2018/12/29.
 //  Copyright © 2018 zevwings. All rights reserved.
 //
 
-import Foundation
 import Alamofire
 
 // MARK: - Definition
@@ -57,7 +56,7 @@ public protocol RequestConvertible {
     func progress(queue: DispatchQueue, progressHandler: @escaping InternalProgressHandler) -> Self
 
     /// 格式化网络请求回调内容
-    func response(queue: DispatchQueue, completionHandler: @escaping (Result<Response, HTTPError>) -> Void) -> Self
+    func response(queue: DispatchQueue, completionHandler: @escaping (Result<Response, HttpError>) -> Void) -> Self
 
     /// 格式化网络请求返回Code验证
     func validate<S>(statusCode acceptableStatusCodes: S) -> Self where S : Sequence, S.Element == Int
@@ -81,14 +80,14 @@ extension RequestConvertible where Self : DataRequest {
 
     public func response(
         queue: DispatchQueue = .main,
-        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
+        completionHandler: @escaping (Result<Response, HttpError>) -> Void
     ) -> Self {
         let internalCompletionHandler: (DataResponse<Response, AFError>) -> Void = { response in
             switch response.result {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.external(error, request: response.request, response: response.response)
+                let err = HttpError.external(error, request: response.request, response: response.response)
                 completionHandler(.failure(err))
             }
         }
@@ -112,9 +111,9 @@ extension RequestConvertible where Self : UploadRequest {
         queue: DispatchQueue = .main,
         progressHandler: @escaping ProgressHandler
     ) -> Self {
-            return uploadProgress(queue: queue, closure: { progress in
-                progressHandler(progress)
-            })
+        return uploadProgress(queue: queue, closure: { progress in
+            progressHandler(progress)
+        })
     }
 }
 
@@ -135,14 +134,14 @@ extension RequestConvertible where Self : DownloadRequest {
 
     public func response(
         queue: DispatchQueue = .main,
-        completionHandler: @escaping (Result<Response, HTTPError>) -> Void
+        completionHandler: @escaping (Result<Response, HttpError>) -> Void
     ) -> Self {
         let internalCompletionHandler: (DownloadResponse<Response, AFError>) -> Void = { response in
             switch response.result {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.external(error, request: response.request, response: response.response)
+                let err = HttpError.external(error, request: response.request, response: response.response)
                 completionHandler(.failure(err))
             }
         }
@@ -194,16 +193,16 @@ struct ResponseSerializer : ResponseSerializerProtocol {
         if let err = error {
             switch err._code {
             case NSURLErrorTimedOut:
-                throw HTTPError.timeout(request: request, response: response)
+                throw HttpError.timeout(request: request, response: response)
             case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
-                throw HTTPError.connectionLost(request: request, response: response)
+                throw HttpError.connectionLost(request: request, response: response)
             default:
-                throw HTTPError.external(err, request: request, response: response)
+                throw HttpError.external(err, request: request, response: response)
             }
         }
 
         guard let validData = data, !validData.isEmpty else {
-            throw HTTPError.emptyResponse(request: request, response: response)
+            throw HttpError.emptyResponse(request: request, response: response)
         }
 
         return Response(request: request, response: response, data: validData)

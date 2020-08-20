@@ -1,0 +1,61 @@
+//
+//  Parameters.swift
+//  HttpClient
+//
+//  Created by zevwings on 2020/8/17.
+//  Copyright © 2020 zevwings. All rights reserved.
+//
+
+import Foundation
+
+/// `Parameters` 拥有一个参数解码方式和值，使用`=>` 操作符进行操作
+///
+/// 示例:
+///
+/// ```
+/// JSONEncoding() => [
+///   "key1": "value1",
+///   "key2": "value2",
+///   "key3": nil,      // will be ignored
+/// ]
+/// ```
+public struct Parameters {
+
+    public var encoding: ParameterEncoding
+    public var values: [String: Any]
+
+    public init(encoding: ParameterEncoding, values: [String: Any?]) {
+        self.encoding = encoding
+        self.values = filterNil(values)
+    }
+}
+
+extension Parameters: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (String, Any?)...) {
+        var values: [String: Any?] = [:]
+        for (key, value) in elements {
+            values[key] = value
+        }
+        self.init(encoding: URLEncoding(), values: values)
+    }
+
+    public func encode(urlRequest: URLRequest) throws -> URLRequest {
+        return try encoding.encode(urlRequest, with: values)
+    }
+}
+
+infix operator =>
+
+public func => (encoding: ParameterEncoding, values: [String: Any?]) -> Parameters {
+    return Parameters(encoding: encoding, values: values)
+}
+
+/// Returns a new dictinoary by filtering out nil values.
+private func filterNil(_ dictionary: [String: Any?]) -> [String: Any] {
+    var newDictionary: [String: Any] = [:]
+    for (key, value) in dictionary {
+        guard let value = value else { continue }
+        newDictionary[key] = value
+    }
+    return newDictionary
+}

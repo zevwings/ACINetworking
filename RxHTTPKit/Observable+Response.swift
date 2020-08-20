@@ -5,7 +5,6 @@
 //  Copyright © 2019 zevwings. All rights reserved.
 //
 
-import Foundation
 import RxSwift
 #if !COCOAPODS
 import HTTPKit
@@ -29,7 +28,7 @@ public extension ObservableType where Element == Response {
         return flatMap { Observable.just(try $0.filterSuccessfulStatusAndRedirectCodes()) }
     }
 
-    func mapImage() -> Observable<UIImage> {
+    func mapImage() -> Observable<Image> {
         return flatMap { Observable.just(try $0.mapImage()) }
     }
 
@@ -39,14 +38,6 @@ public extension ObservableType where Element == Response {
 
     func mapString(atKeyPath keyPath: String? = nil) -> Observable<String> {
         return flatMap { Observable.just(try $0.mapString(atKeyPath: keyPath)) }
-    }
-
-    func mapObject<C: Codable>(
-        to type: C.Type,
-        decoder: JSONDecoder = JSONDecoder(),
-        atKeyPath keyPath: String? = nil
-    ) -> Observable<C> {
-        return flatMap { Observable.just(try $0.mapObject(to: type, decoder: decoder, atKeyPath: keyPath)) }
     }
 }
 
