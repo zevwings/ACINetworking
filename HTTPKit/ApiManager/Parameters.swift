@@ -8,6 +8,15 @@
 
 import Foundation
 
+struct AnyEncodable: Encodable {
+    
+    let value: Encodable
+
+    func encode(to encoder: Encoder) throws {
+        try value.encode(to: encoder)
+    }
+}
+
 /// `Parameters` 拥有一个参数解码方式和值，使用`=>` 操作符进行操作
 ///
 /// 示例:
@@ -47,6 +56,22 @@ extension Parameters: ExpressibleByDictionaryLiteral {
 infix operator =>
 
 public func => (encoding: ParameterEncoding, values: [String: Any?]) -> Parameters {
+    return Parameters(encoding: encoding, values: values)
+}
+
+public func => (encoding: ParameterEncoding, encodable: Encodable) -> Parameters {
+
+    var values: [String: Any] = [:]
+    do {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        let data = try encoder.encode(AnyEncodable(value: encodable))
+        if let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] {
+            values = json
+        }
+    } catch {
+        HTTPLogger.log(.error, items: "\(encodable) 转换为请求参数失败")
+    }
     return Parameters(encoding: encoding, values: values)
 }
 

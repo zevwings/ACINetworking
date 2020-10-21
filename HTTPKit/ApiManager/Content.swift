@@ -24,12 +24,6 @@ public enum Content {
     /// 有参数请求
     case requestParameters(parameters: Parameters)
 
-//    /// 使用 `Encodable` 参数请求
-//    case requestJSONEncodable(Encodable)
-//
-//    /// 使用自定义 `Encodable` 参数请求
-//    case requestCustomJSONEncodable(Encodable, encoder: JSONEncoder)
-
     /// 无参数下载请求
     case download(destination: Destination?)
 
@@ -61,44 +55,3 @@ extension Content {
         }
     }
 }
-
-//struct AnyEncodable: Encodable {
-//
-//    private let encodable: Encodable
-//
-//    public init(_ encodable: Encodable) {
-//        self.encodable = encodable
-//    }
-//
-//    func encode(to encoder: Encoder) throws {
-//        try encodable.encode(to: encoder)
-//    }
-//}
-//
-//
-//extension URLRequest {
-//
-//    mutating func encoded(encodable: Encodable, encoder: JSONEncoder = JSONEncoder()) throws -> URLRequest {
-//        do {
-//            let encodable = AnyEncodable(encodable)
-//            httpBody = try encoder.encode(encodable)
-//
-//            let contentTypeHeaderName = "Content-Type"
-//            if value(forHTTPHeaderField: contentTypeHeaderName) == nil {
-//                setValue("application/json", forHTTPHeaderField: contentTypeHeaderName)
-//            }
-//
-//            return self
-//        } catch {
-//            throw MoyaError.encodableMapping(error)
-//        }
-//    }
-//
-//    func encoded(parameters: [String: Any], parameterEncoding: ParameterEncoding) throws -> URLRequest {
-//        do {
-//            return try parameterEncoding.encode(self, with: parameters)
-//        } catch {
-//            throw MoyaError.parameterEncoding(error)
-//        }
-//    }
-//}

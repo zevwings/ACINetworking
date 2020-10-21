@@ -79,10 +79,6 @@ public class Builder : BuilderType {
         switch api.content {
         case .requestPlain, .requestParameters:
             alamofireRequest = session.request(urlRequest, interceptor: interceptor)
-//        case let .requestJSONEncodable(encodable):
-//            return try request.encoded(encodable: encodable)
-//        case let .requestCustomJSONEncodable(encodable, encoder: encoder):
-//            return try request.encoded(encodable: encodable, encoder: encoder)
         case let .download(destination), let .downloadParameters(destination, _):
             alamofireRequest =  session.download(urlRequest, interceptor: interceptor, to: destination)
         case let .uploadFile(fileURL):

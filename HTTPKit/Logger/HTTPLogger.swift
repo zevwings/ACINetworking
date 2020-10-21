@@ -97,10 +97,14 @@ extension HTTPLogger {
 
         if logType == .response, let response = value as? Response {
             description.append("------------------------------------------------------------\n")
-            if let response = String(data: response.data, encoding: .utf8) {
-                description.append("response: \(response)\n")
+            if HTTPLogger.logLevel == .info {
+                description.append("response: \(response.data.count)\n")
             } else {
-                description.append("response: \n")
+                if let response = String(data: response.data, encoding: .utf8) {
+                    description.append("response: \(response)\n")
+                } else {
+                    description.append("response: \n")
+                }
             }
         }
 
