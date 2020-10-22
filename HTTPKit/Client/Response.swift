@@ -91,7 +91,7 @@ public extension Response {
 
 // MARK: - Mapping
 
-extension Response {
+public extension Response {
 
     ///  将数据转换为图片
     /// - Throws: HttpError
