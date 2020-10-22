@@ -52,6 +52,8 @@ extension Response : Equatable {
     }
 }
 
+// MAKR: - Filter
+
 public extension Response {
 
     ///  过滤 Status Code 如果不为指定范围的 Code 时抛出异常
@@ -85,17 +87,19 @@ public extension Response {
     func filterSuccessfulStatusAndRedirectCodes() throws -> Response {
         return try filter(statusCodes: 200...399)
     }
+}
+
+// MARK: - Mapping
+
+extension Response {
 
     ///  将数据转换为图片
     /// - Throws: HttpError
     /// - Returns: 图片对象
     func mapImage() throws -> Image {
         guard let image = Image(data: data) else {
-            let error = HTTPError.cast(value: data, targetType: Image.self, request: request, response: response)
-            HTTPLogger.log(.verbose, logType: .cast, error: error)
-            throw error
+            throw HTTPError.cast(value: data, targetType: Image.self, request: request, response: response)
         }
-        HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: image)
         return image
     }
 
@@ -108,22 +112,15 @@ public extension Response {
     /// - Returns: JSON 对象
     func mapJSON(
         options: JSONSerialization.ReadingOptions = [.allowFragments],
-        failsOnEmptyData: Bool = true,
-        logVerbose: Bool = false
+        failsOnEmptyData: Bool = true
     ) throws -> Any {
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: options)
-            if logVerbose {
-                HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: jsonObject)
-            }
             return jsonObject
         } catch {
             let error = HTTPError.cast(value: data, targetType: Any.self, request: request, response: response)
             if data.count < 1 && !failsOnEmptyData {
                 return NSNull()
-            }
-            if logVerbose {
-                HTTPLogger.log(.verbose, logType: .cast, error: error)
             }
             throw error
         }
@@ -137,19 +134,13 @@ public extension Response {
         if let keyPath = keyPath {
             let jsonDictionary = try mapJSON() as? NSDictionary
             guard let string = jsonDictionary?.value(forKeyPath: keyPath) as? String else {
-                let error = HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
-                HTTPLogger.log(.verbose, logType: .cast, error: error)
-                throw error
+                throw HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
             }
-            HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
             return string
         } else {
             guard let string = String(data: data, encoding: .utf8) else {
-                let error = HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
-                HTTPLogger.log(.verbose, logType: .cast, error: error)
-                throw error
+                throw HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
             }
-            HTTPLogger.log(.verbose, logType: .cast, urlRequest: request, value: string)
             return string
         }
     }

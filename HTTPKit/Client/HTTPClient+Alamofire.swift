@@ -20,6 +20,8 @@ public typealias Session = Alamofire.Session
 public typealias SessionDelegate = Alamofire.SessionDelegate
 
 // Request
+public typealias RequestState = Alamofire.Request.State
+public typealias Request = Alamofire.Request
 public typealias DataRequest = Alamofire.DataRequest
 public typealias UploadRequest = Alamofire.UploadRequest
 public typealias DownloadRequest = Alamofire.DownloadRequest
@@ -87,7 +89,7 @@ extension RequestConvertible where Self : DataRequest {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.external(error, request: response.request, response: response.response)
+                let err = self.afErrorMapping(error, request: response.request, response: response.response)
                 completionHandler(.failure(err))
             }
         }
@@ -141,16 +143,42 @@ extension RequestConvertible where Self : DownloadRequest {
             case .success(let value):
                 completionHandler(.success(value))
             case .failure(let error):
-                let err = HTTPError.external(error, request: response.request, response: response.response)
+                let err = self.afErrorMapping(error, request: response.request, response: response.response)
                 completionHandler(.failure(err))
             }
         }
 
+        let responseSerializer = ResponseSerializer()
         return response(
             queue: queue,
-            responseSerializer: ResponseSerializer(),
+            responseSerializer: responseSerializer,
             completionHandler: internalCompletionHandler
         )
+    }
+}
+
+extension RequestConvertible {
+
+    /// 处理 Alamofire 错误消息为 HTTPError
+    /// - Parameters:
+    ///   - error: Alamofire Error
+    ///   - request: 请求内容
+    ///   - response: 请求结果
+    /// - Returns: HTTPError
+    func afErrorMapping(_ error: AFError, request: URLRequest?, response: HTTPURLResponse?) -> HTTPError {
+        switch error {
+        case let .sessionTaskFailed(sError):
+            switch sError._code {
+            case NSURLErrorTimedOut:
+                return HTTPError.timeout(request: request, response: response)
+            case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost, NSURLErrorNotConnectedToInternet:
+                return HTTPError.connectionLost(request: request, response: response)
+            default:
+                return HTTPError.external(error, request: request, response: response)
+            }
+        default:
+            return HTTPError.external(error, request: request, response: response)
+        }
     }
 }
 
@@ -161,15 +189,26 @@ extension DownloadRequest : RequestConvertible {}
 
 public protocol TaskConvertible {
 
+    var id: UUID { get }
     /// 格式化当前网络请求
     var request: URLRequest? { get }
+    /// 格式化取消网络请求状态
+    var state: RequestState { get }
+    /// 格式化取消网络请求状态 `.initialized`.
+    var isInitialized: Bool { get }
+    /// Returns whether `state is `.resumed`.
+    var isResumed: Bool { get }
+    /// 格式化取消网络请求状态 `.suspended`.
+    var isSuspended: Bool { get }
+    /// 格式化取消网络请求状态 `.cancelled`.
+    var isCancelled: Bool { get }
+    /// 格式化取消网络请求状态 `.finished`.
+    var isFinished: Bool { get }
 
     /// 格式化取消网络请求
     @discardableResult func cancel() -> Self
-
     /// 格式化暂停网络请求
     @discardableResult func suspend() -> Self
-
     /// 格式化恢复网络请求
     @discardableResult func resume() -> Self
 }
@@ -190,21 +229,35 @@ struct ResponseSerializer : ResponseSerializerProtocol {
         error: Error?
     ) throws -> Response {
 
-        if let err = error {
-            switch err._code {
-            case NSURLErrorTimedOut:
-                throw HTTPError.timeout(request: request, response: response)
-            case NSURLErrorCannotConnectToHost, NSURLErrorNetworkConnectionLost:
-                throw HTTPError.connectionLost(request: request, response: response)
-            default:
-                throw HTTPError.external(err, request: request, response: response)
-            }
+        guard error == nil else { throw error! }
+
+        guard let data = data, !data.isEmpty else {
+            throw AFError.responseSerializationFailed(reason: .inputDataNilOrZeroLength)
         }
 
-        guard let validData = data, !validData.isEmpty else {
-            throw HTTPError.emptyResponse(request: request, response: response)
+        return Response(request: request, response: response, data: data)
+    }
+
+    func serializeDownload(
+        request: URLRequest?,
+        response: HTTPURLResponse?,
+        fileURL: URL?,
+        error: Error?
+    ) throws -> Self.SerializedObject {
+
+        guard error == nil else { throw error! }
+
+        guard let fileURL = fileURL else {
+            throw AFError.responseSerializationFailed(reason: .inputFileNil)
         }
 
-        return Response(request: request, response: response, data: validData)
+        let data: Data
+        do {
+            data = try Data(contentsOf: fileURL)
+        } catch {
+            throw AFError.responseSerializationFailed(reason: .inputFileReadFailed(at: fileURL))
+        }
+
+        return try serialize(request: request, response: response, data: data, error: error)
     }
 }

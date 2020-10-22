@@ -14,8 +14,8 @@ extension HTTPClient {
 
         let configuration = URLSessionConfiguration.default
         configuration.headers = HTTPHeaders.default
-        configuration.timeoutIntervalForRequest = 30.0
-        configuration.timeoutIntervalForResource = 30.0
+        configuration.timeoutIntervalForRequest = 15.0
+        configuration.timeoutIntervalForResource = 15.0
 
         let delegate = SessionDelegate()
         let rootQueue = DispatchQueue(label: "com.zevwings.httpkit.rootQueue")

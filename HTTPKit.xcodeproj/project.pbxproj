@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,10 @@
 		4D2C0DAE248E050E00D82944 /* HTTPKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD229D323279D9C00F1303E /* HTTPKit.framework */; };
 		4D2C0DB5248E051900D82944 /* Single+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793823289E4B0002323E /* Single+Response.swift */; };
 		4D2C0DB6248E051900D82944 /* Observable+Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D89793623289E3C0002323E /* Observable+Response.swift */; };
+		4D3B503325417E970064B078 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 4D3B503225417E970064B078 /* Alamofire */; };
+		4D3B503C25417EEA0064B078 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 4D3B503B25417EEA0064B078 /* RxCocoa */; };
+		4D3B503E25417EEA0064B078 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 4D3B503D25417EEA0064B078 /* RxRelay */; };
+		4D3B504025417EEA0064B078 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 4D3B503F25417EEA0064B078 /* RxSwift */; };
 		4D6F954E24EE6C5100F6D2D2 /* Paginator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F954124EE6C5100F6D2D2 /* Paginator.swift */; };
 		4D6F954F24EE6C5100F6D2D2 /* HTTPLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F954324EE6C5100F6D2D2 /* HTTPLogger.swift */; };
 		4D6F955024EE6C5100F6D2D2 /* Plugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F954524EE6C5100F6D2D2 /* Plugin.swift */; };
@@ -25,16 +29,12 @@
 		4D6F955624EE6C5100F6D2D2 /* HTTPClient+Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F954C24EE6C5100F6D2D2 /* HTTPClient+Alamofire.swift */; };
 		4D6F955724EE6C5100F6D2D2 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F954D24EE6C5100F6D2D2 /* Task.swift */; };
 		4D6F955924EE6CD500F6D2D2 /* HTTPClient+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F955824EE6CD500F6D2D2 /* HTTPClient+Rx.swift */; };
-		4D6F955A24EE6E0A00F6D2D2 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97AA23349A5000A28338 /* Alamofire.framework */; };
-		4D6F955B24EE6E0A00F6D2D2 /* Alamofire.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97AA23349A5000A28338 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4D6F956424EE6E2200F6D2D2 /* MultipartFormData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F955E24EE6E2200F6D2D2 /* MultipartFormData.swift */; };
 		4D6F956524EE6E2200F6D2D2 /* ValidationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F955F24EE6E2200F6D2D2 /* ValidationType.swift */; };
 		4D6F956624EE6E2200F6D2D2 /* Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F956024EE6E2200F6D2D2 /* Parameters.swift */; };
 		4D6F956724EE6E2200F6D2D2 /* ApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F956124EE6E2200F6D2D2 /* ApiManager.swift */; };
 		4D6F956824EE6E2200F6D2D2 /* Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F956224EE6E2200F6D2D2 /* Content.swift */; };
 		4D6F956924EE6E2200F6D2D2 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F956324EE6E2200F6D2D2 /* Route.swift */; };
-		4D6F956A24EE6F6A00F6D2D2 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97B92334A1CB00A28338 /* RxSwift.framework */; };
-		4D6F956B24EE6F6A00F6D2D2 /* RxSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DCE97B92334A1CB00A28338 /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4D6F956D24EE6F7B00F6D2D2 /* HTTPKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD229D323279D9C00F1303E /* HTTPKit.framework */; };
 		4D6F956E24EE6F7B00F6D2D2 /* HTTPKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD229D323279D9C00F1303E /* HTTPKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4DD229E423279D9C00F1303E /* HTTPKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DD229D623279D9C00F1303E /* HTTPKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -66,24 +66,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4D6F955C24EE6E0A00F6D2D2 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				4D6F955B24EE6E0A00F6D2D2 /* Alamofire.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4D6F956C24EE6F6A00F6D2D2 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4D6F956B24EE6F6A00F6D2D2 /* RxSwift.framework in Embed Frameworks */,
 				4D6F956E24EE6F7B00F6D2D2 /* HTTPKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -136,7 +124,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D6F956A24EE6F6A00F6D2D2 /* RxSwift.framework in Frameworks */,
+				4D3B503E25417EEA0064B078 /* RxRelay in Frameworks */,
+				4D3B503C25417EEA0064B078 /* RxCocoa in Frameworks */,
+				4D3B504025417EEA0064B078 /* RxSwift in Frameworks */,
 				4D6F956D24EE6F7B00F6D2D2 /* HTTPKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -161,7 +151,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D6F955A24EE6E0A00F6D2D2 /* Alamofire.framework in Frameworks */,
+				4D3B503325417E970064B078 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,6 +335,11 @@
 				4D6F957024EE6F7B00F6D2D2 /* PBXTargetDependency */,
 			);
 			name = RxHTTPKit;
+			packageProductDependencies = (
+				4D3B503B25417EEA0064B078 /* RxCocoa */,
+				4D3B503D25417EEA0064B078 /* RxRelay */,
+				4D3B503F25417EEA0064B078 /* RxSwift */,
+			);
 			productName = RxHTTPKit;
 			productReference = 4D2C0D8E248E04F900D82944 /* RxHTTPKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -395,13 +390,15 @@
 				4DD229D123279D9C00F1303E /* Resources */,
 				4D897900232880790002323E /* swiftlint */,
 				4DCE97AC23349A5A00A28338 /* carthage */,
-				4D6F955C24EE6E0A00F6D2D2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = HTTPKit;
+			packageProductDependencies = (
+				4D3B503225417E970064B078 /* Alamofire */,
+			);
 			productName = HTTPKit;
 			productReference = 4DD229D323279D9C00F1303E /* HTTPKit.framework */;
 			productType = "com.apple.product-type.framework";
@@ -413,7 +410,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1150;
-				LastUpgradeCheck = 1030;
+				LastUpgradeCheck = 1210;
 				ORGANIZATIONNAME = zevwings;
 				TargetAttributes = {
 					4D2C0D8D248E04F900D82944 = {
@@ -439,6 +436,10 @@
 				Base,
 			);
 			mainGroup = 4DD229C923279D9C00F1303E;
+			packageReferences = (
+				4D3B503125417E970064B078 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				4D3B503A25417EEA0064B078 /* XCRemoteSwiftPackageReference "RxSwift" */,
+			);
 			productRefGroup = 4DD229D423279D9C00F1303E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -608,7 +609,7 @@
 				);
 				INFOPLIST_FILE = RxHTTPKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -637,7 +638,7 @@
 				);
 				INFOPLIST_FILE = RxHTTPKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -757,6 +758,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -821,6 +823,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -869,7 +872,7 @@
 				);
 				INFOPLIST_FILE = HTTPKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -899,7 +902,7 @@
 				);
 				INFOPLIST_FILE = HTTPKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -962,6 +965,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4D3B503125417E970064B078 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.3.0;
+			};
+		};
+		4D3B503A25417EEA0064B078 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4D3B503225417E970064B078 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D3B503125417E970064B078 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		4D3B503B25417EEA0064B078 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D3B503A25417EEA0064B078 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		4D3B503D25417EEA0064B078 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D3B503A25417EEA0064B078 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		4D3B503F25417EEA0064B078 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4D3B503A25417EEA0064B078 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4DD229CA23279D9C00F1303E /* Project object */;
 }

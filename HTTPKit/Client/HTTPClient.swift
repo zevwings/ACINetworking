@@ -162,6 +162,7 @@ public final class HTTPClient<API: ApiManager> : Client {
                     completionHandler(.failure(err))
                 }
             case .failure(let error):
+                HTTPLogger.log(.error, logType: .response, error: error)
                 completionHandler(.failure(error))
             }
         }

@@ -20,22 +20,16 @@ public enum Content {
 
     /// 无参数请求
     case requestPlain
-
     /// 有参数请求
     case requestParameters(parameters: Parameters)
-
     /// 无参数下载请求
     case download(destination: Destination?)
-
     /// 有参数下载请求
     case downloadParameters(destination: Destination?, parameters: Parameters)
-
     /// 上传文件请求
     case uploadFile(fileURL: URL)
-
     /// 无参数Mutipart上传请求
     case uploadFormData(mutipartFormData: [MultipartFormData])
-
     /// 有参数Mutipart上传请求
     case uploadFormDataParameters(mutipartFormData: [MultipartFormData], parameters: Parameters)
 }
