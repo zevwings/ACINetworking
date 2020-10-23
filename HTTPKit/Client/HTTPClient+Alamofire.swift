@@ -26,6 +26,7 @@ public typealias DataRequest = Alamofire.DataRequest
 public typealias UploadRequest = Alamofire.UploadRequest
 public typealias DownloadRequest = Alamofire.DownloadRequest
 public typealias RequestMultipartFormData = Alamofire.MultipartFormData
+public typealias URLRequestConvertible = Alamofire.URLRequestConvertible
 
 // Result
 public typealias DataResponse = Alamofire.DataResponse
@@ -34,9 +35,8 @@ public typealias ResponseSerializerProtocol = Alamofire.ResponseSerializer
 public typealias DataResponseSerializerProtocol = Alamofire.DataResponseSerializerProtocol
 public typealias DownloadResponseSerializerProtocol = Alamofire.DownloadResponseSerializerProtocol
 
-public typealias URLRequestConvertible = Alamofire.URLRequestConvertible
-
 // RequestInterceptor
+public typealias Retrier = Alamofire.Retrier
 public typealias RetryResult = Alamofire.RetryResult
 
 // ParameterEncoding
@@ -158,7 +158,7 @@ extension RequestConvertible where Self : DownloadRequest {
 }
 
 extension RequestConvertible {
-
+    
     /// 处理 Alamofire 错误消息为 HTTPError
     /// - Parameters:
     ///   - error: Alamofire Error
@@ -204,7 +204,7 @@ public protocol TaskConvertible {
     var isCancelled: Bool { get }
     /// 格式化取消网络请求状态 `.finished`.
     var isFinished: Bool { get }
-
+    
     /// 格式化取消网络请求
     @discardableResult func cancel() -> Self
     /// 格式化暂停网络请求
@@ -228,7 +228,7 @@ struct ResponseSerializer : ResponseSerializerProtocol {
         data: Data?,
         error: Error?
     ) throws -> Response {
-
+        
         guard error == nil else { throw error! }
 
         guard let data = data, !data.isEmpty else {
@@ -237,14 +237,14 @@ struct ResponseSerializer : ResponseSerializerProtocol {
 
         return Response(request: request, response: response, data: data)
     }
-
+    
     func serializeDownload(
         request: URLRequest?,
         response: HTTPURLResponse?,
         fileURL: URL?,
         error: Error?
     ) throws -> Self.SerializedObject {
-
+        
         guard error == nil else { throw error! }
 
         guard let fileURL = fileURL else {

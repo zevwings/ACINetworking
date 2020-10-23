@@ -33,7 +33,7 @@ public protocol PluginType {
     func didComplete<API>(api: API, result: Result<Response, HTTPError>) where API: ApiManager
 
     /// 网络请求需要自动重试
-    func retry<API>(api: API, error: Error, completion: @escaping (RetryResult) -> Void) where API: ApiManager
+    func retry<API>(api: API, urlRequest: URLRequest) -> Retrier? where API: ApiManager
 }
 
 // MARK: - Defaults
@@ -68,7 +68,7 @@ extension PluginType {
 
     }
 
-    public func retry<API>(api: API, error: Error, completion: @escaping (RetryResult) -> Void) where API: ApiManager {
-
+    public func retry<API>(api: API, urlRequest: URLRequest) -> Retrier? where API: ApiManager {
+        return nil
     }
 }

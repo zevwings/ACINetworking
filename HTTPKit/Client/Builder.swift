@@ -69,10 +69,10 @@ public class Builder : BuilderType {
         /// 将要发送网络请求
         plugins.forEach { $0.willSend(api: api, urlRequest: urlRequest) }
 
-        let retrier = Retrier(api: api, plugins: plugins)
+        let retriers = plugins.compactMap { $0.retry(api: api, urlRequest: urlRequest) }
         let interceptor: Alamofire.Interceptor? = plugins.isEmpty ?
             nil :
-            Alamofire.Interceptor(adapters: [], retriers: [retrier])
+            Alamofire.Interceptor(adapters: [], retriers: retriers)
 
         /// 生成请求 AlamofireRequest
         var alamofireRequest: Requestable
@@ -102,25 +102,4 @@ public class Builder : BuilderType {
         return (urlRequest, alamoRequest)
     }
     //swiftlint:enable function_body_length
-}
-
-// MARK: - Alamofire RequestRetrier
-
-final class Retrier<API : ApiManager>: RequestRetrier {
-
-    let api: API
-    let plugins: [PluginType]
-    init (api: API, plugins: [PluginType]) {
-        self.api = api
-        self.plugins = plugins
-    }
-
-    public func retry(
-        _ request: Alamofire.Request,
-        for session: Session,
-        dueTo error: Error,
-        completion: @escaping (RetryResult) -> Void
-    ) {
-        plugins.forEach { $0.retry(api: api, error: error, completion: completion) }
-    }
 }
