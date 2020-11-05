@@ -147,3 +147,20 @@ extension HTTPError {
         }
     }
 }
+
+extension Error {
+    
+    public var asHTTPError: HTTPError? {
+        return self as? HTTPError
+    }
+
+    public func unwrapHTTPError<E>(to error: E, defaultError: @autoclosure () -> E) -> E {
+        let actualError = asHTTPError?.error
+        return actualError as? E ?? defaultError()
+    }
+    
+    public func unwrapHTTPError<E>(to error: E) -> E? {
+        let actualError = asHTTPError?.error
+        return actualError as? E
+    }
+}
