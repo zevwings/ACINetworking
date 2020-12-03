@@ -5,6 +5,7 @@
 //  Copyright © 2019 zevwings. All rights reserved.
 //
 
+import Foundation
 import Alamofire
 
 // MARK: - Builder
@@ -40,25 +41,30 @@ public class Builder : BuilderType {
         urlRequest.httpMethod = api.route.method.rawValue
         api.headerFields.forEach { urlRequest.addValue($0.value, forHTTPHeaderField: $0.key) }
 
-        var parameters = api.content.parameters?.values
-        /// 处理分页参数
-        if let paginator = api.paginator {
-            parameters = parameters ?? [:]  /// 防止请求参数为空
-            parameters?[paginator.countKey] = paginator.count
-            parameters?[paginator.indexKey] = paginator.index
-        }
+        switch api.content {
+        case let .requestData(data):
+            urlRequest.httpBody = data
+        default:
+            var parameters = api.content.parameters?.values
+            /// 处理分页参数
+            if let paginator = api.paginator {
+                parameters = parameters ?? [:]  /// 防止请求参数为空
+                parameters?[paginator.countKey] = paginator.count
+                parameters?[paginator.indexKey] = paginator.index
+            }
 
-        /// 通过插件和拦截器处理请求参数
-        /// 错误类型：自定义错误
-        parameters = try plugins.reduce(parameters) { try $1.intercept(api: api, paramters: parameters)}
+            /// 通过插件和拦截器处理请求参数
+            /// 错误类型：自定义错误
+            parameters = try plugins.reduce(parameters) { try $1.intercept(api: api, paramters: parameters)}
 
-        let encoding = api.content.parameters?.encoding
-        if let encoding = encoding {
-            do {
-                urlRequest = try encoding.encode(urlRequest, with: parameters)
-            } catch {
-                /// 错误类型：HTTPError.encode
-                throw HTTPError.encode(parameters: parameters, encoding: encoding, error: error)
+            let encoding = api.content.parameters?.encoding
+            if let encoding = encoding {
+                do {
+                    urlRequest = try encoding.encode(urlRequest, with: parameters)
+                } catch {
+                    /// 错误类型：HTTPError.encode
+                    throw HTTPError.encode(parameters: parameters, encoding: encoding, error: error)
+                }
             }
         }
 
@@ -77,7 +83,7 @@ public class Builder : BuilderType {
         /// 生成请求 AlamofireRequest
         var alamofireRequest: Requestable
         switch api.content {
-        case .requestPlain, .requestParameters:
+        case .requestPlain, .requestParameters, .requestData:
             alamofireRequest = session.request(urlRequest, interceptor: interceptor)
         case let .download(destination), let .downloadParameters(destination, _):
             alamofireRequest =  session.download(urlRequest, interceptor: interceptor, to: destination)
@@ -85,7 +91,7 @@ public class Builder : BuilderType {
             alamofireRequest =  session.upload(fileURL, with: urlRequest, interceptor: interceptor)
         case let .uploadFormData(mutipartFormData), let .uploadFormDataParameters(mutipartFormData, _):
             let multipartFormData: (RequestMultipartFormData) -> Void = { formData in
-                formData.applyMoyaMultipartFormData(mutipartFormData)
+                formData.applyMultipartFormData(mutipartFormData)
             }
             alamofireRequest = session.upload(
                 multipartFormData: multipartFormData,

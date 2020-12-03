@@ -5,6 +5,7 @@
 //  Copyright © 2018 zevwings. All rights reserved.
 //
 
+import Foundation
 import Alamofire
 
 // MARK: - Definition
@@ -158,7 +159,7 @@ extension RequestConvertible where Self : DownloadRequest {
 }
 
 extension RequestConvertible {
-    
+
     /// 处理 Alamofire 错误消息为 HTTPError
     /// - Parameters:
     ///   - error: Alamofire Error
@@ -204,7 +205,7 @@ public protocol TaskConvertible {
     var isCancelled: Bool { get }
     /// 格式化取消网络请求状态 `.finished`.
     var isFinished: Bool { get }
-    
+
     /// 格式化取消网络请求
     @discardableResult func cancel() -> Self
     /// 格式化暂停网络请求
@@ -228,7 +229,7 @@ struct ResponseSerializer : ResponseSerializerProtocol {
         data: Data?,
         error: Error?
     ) throws -> Response {
-        
+
         guard error == nil else { throw error! }
 
         guard let data = data, !data.isEmpty else {
@@ -237,14 +238,14 @@ struct ResponseSerializer : ResponseSerializerProtocol {
 
         return Response(request: request, response: response, data: data)
     }
-    
+
     func serializeDownload(
         request: URLRequest?,
         response: HTTPURLResponse?,
         fileURL: URL?,
         error: Error?
     ) throws -> Self.SerializedObject {
-        
+
         guard error == nil else { throw error! }
 
         guard let fileURL = fileURL else {

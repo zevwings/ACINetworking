@@ -77,7 +77,7 @@ extension RequestMultipartFormData {
         )
     }
 
-    func applyMoyaMultipartFormData(_ multipartBody: [MultipartFormData]) {
+    func applyMultipartFormData(_ multipartBody: [MultipartFormData]) {
         multipartBody.forEach { bodyPart in
             switch bodyPart.formDataType {
             case .data(let data):

@@ -10,14 +10,14 @@ import Foundation
 public protocol TaskType {
 
     var id: UUID { get }
-    
+
     var state: RequestState { get }
     var isInitialized: Bool { get }
     var isResumed: Bool { get }
     var isSuspended: Bool { get }
     var isCancelled: Bool { get }
     var isFinished: Bool { get }
-    
+
     /// 开始/恢复网络请求
     func resume()
     /// 暂停网络请求，仅`DownloadRequest`使用
@@ -31,14 +31,14 @@ public final class Task : TaskType {
     public typealias CancelAction = () -> Void
 
     public var id: UUID { return request.id }
-        
+
     public var state: RequestState { return request.state }
     public var isInitialized: Bool { return request.isInitialized }
     public var isResumed: Bool { return request.isResumed }
     public var isSuspended: Bool { return request.isSuspended }
     public var isCancelled: Bool { return request.isCancelled }
     public var isFinished: Bool { return request.isFinished }
-    
+
     private let request: Requestable
     private let cancelAction: CancelAction
     private var lock: DispatchSemaphore = DispatchSemaphore(value: 1)

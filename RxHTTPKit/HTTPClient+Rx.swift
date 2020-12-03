@@ -6,6 +6,7 @@
 //
 
 import RxSwift
+import Dispatch
 #if !COCOAPODS
 import HTTPKit
 #endif

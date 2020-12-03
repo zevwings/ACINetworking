@@ -6,24 +6,18 @@ import PackageDescription
 let package = Package(
     name: "HTTPKit",
     platforms: [
-        .iOS(.v9),
+        .iOS(.v10),
         .macOS(.v10_12),
         .tvOS(.v10),
         .watchOS(.v3)
     ],
     products: [
-        .library(
-            name: "HTTPKit",
-            targets: ["HTTPKit"]
-        ),
-        .library(
-            name: "RxSupport",
-            targets: ["RxSupport"]
-        )
+        .library(name: "HTTPKit", targets: ["HTTPKit"]),
+        .library(name: "RxHTTPKit", targets: ["RxHTTPKit"])
     ],
     dependencies: [
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.0.0"),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "4.9.1")
+        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.0.0")
     ],
     targets: [
         .target(
@@ -32,9 +26,9 @@ let package = Package(
             path: "HTTPKit"
         ),
         .target(
-            name: "RxSupport",
+            name: "RxHTTPKit",
             dependencies: ["HTTPKit", "RxSwift"],
-            path: "RxSupport"
+            path: "RxHTTPKit"
         ),
     ],
     swiftLanguageVersions: [.v5]
