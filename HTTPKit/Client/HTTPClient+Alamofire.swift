@@ -69,16 +69,28 @@ public protocol RequestConvertible {
 extension RequestConvertible where Self : DataRequest {
 
     public var executeProgress: Progress {
-        return self.downloadProgress
+        switch self {
+        case let uploadRequest as UploadRequest:
+            return uploadRequest.uploadProgress
+        default:
+            return downloadProgress
+        }
     }
 
     public func progress(
         queue: DispatchQueue = .main,
         progressHandler: @escaping InternalProgressHandler
     ) -> Self {
-        return downloadProgress(closure: { progress in
-            progressHandler(progress)
-        })
+        switch self {
+        case let uploadRequest as UploadRequest:
+            return uploadProgress(queue: queue) {  progress in
+                progressHandler(progress)
+            }
+        default:
+            return downloadProgress(queue: queue) { progress in
+                progressHandler(progress)
+            }
+        }
     }
 
     public func response(
@@ -100,23 +112,6 @@ extension RequestConvertible where Self : DataRequest {
             responseSerializer: ResponseSerializer(),
             completionHandler: internalCompletionHandler
         )
-    }
-}
-
-extension RequestConvertible where Self : UploadRequest {
-
-    var executeProgress: Progress {
-        return self.uploadProgress
-    }
-
-    @discardableResult
-    public func progress(
-        queue: DispatchQueue = .main,
-        progressHandler: @escaping ProgressHandler
-    ) -> Self {
-        return uploadProgress(queue: queue, closure: { progress in
-            progressHandler(progress)
-        })
     }
 }
 

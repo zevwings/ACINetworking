@@ -115,6 +115,8 @@ public final class HTTPClient<API: ApiManager> : Client {
             }
         }
 
+        print(" xxxx \(type(of: alamoRequest))")
+        
         alamoRequest = alamoRequest.progress(
             queue: callbackQueue,
             progressHandler: internalProgressHandler
