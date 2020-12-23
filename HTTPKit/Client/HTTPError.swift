@@ -150,12 +150,20 @@ extension HTTPError {
 
 extension Error {
 
-    public var asHTTPError: HTTPError? {
+    public var httpError: HTTPError? {
         return self as? HTTPError
     }
 
+    public func asAFError(or defaultAFError: @autoclosure () -> HTTPError) -> HTTPError {
+        self as? HTTPError ?? defaultAFError()
+    }
+    
     public var requestError: RequestError? {
         let error = self as? HTTPError
         return error?.error.asAFError
+    }
+    
+    public func asAFError(or defaultAFError: @autoclosure () -> RequestError) -> RequestError {
+        self as? RequestError ?? defaultAFError()
     }
 }
