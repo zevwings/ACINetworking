@@ -35,6 +35,7 @@ public typealias DownloadResponse = Alamofire.DownloadResponse
 public typealias ResponseSerializerProtocol = Alamofire.ResponseSerializer
 public typealias DataResponseSerializerProtocol = Alamofire.DataResponseSerializerProtocol
 public typealias DownloadResponseSerializerProtocol = Alamofire.DownloadResponseSerializerProtocol
+public typealias RequestError = Alamofire.AFError
 
 // RequestInterceptor
 public typealias Retrier = Alamofire.Retrier
