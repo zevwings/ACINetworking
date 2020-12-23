@@ -25,6 +25,8 @@ public enum HTTPError : Error {
     case timeout(request: URLRequest?, response: HTTPURLResponse?)
     /// 网络链接错误
     case connectionLost(request: URLRequest?, response: HTTPURLResponse?)
+    /// 取消网络请求
+    case explicitlyCancelled(request: URLRequest?, response: HTTPURLResponse?)
     /// 外部错误，系统错误或者AF底层错误（接收系统报错，统一提示为系统错误）
     case external(Swift.Error, request: URLRequest?, response: HTTPURLResponse?)
     /// 自定义错误（接收自定义错误，可以自定义提示）
@@ -43,6 +45,8 @@ extension HTTPError : LocalizedError {
             return "网络请求超时"
         case .connectionLost:
             return "网络链接错误"
+        case .explicitlyCancelled:
+            return "操作取消"
         case .external:
             return "系统错误"
         case .underlying(let error, _, _):
@@ -71,6 +75,8 @@ extension HTTPError : CustomStringConvertible, CustomDebugStringConvertible {
             return "网络请求超时，请检查网络是否正常"
         case .connectionLost:
             return "网络连接失败，请检查网络是否正常"
+        case .explicitlyCancelled:
+            return "操作取消"
         case let .external(error, _, _):
             return errorHandler(error: error, defaultMessage: "系统错误")
         case let .underlying(error, _, _):
@@ -129,6 +135,8 @@ extension HTTPError {
         case let .timeout(request, _):
             return request
         case let .connectionLost(request, _):
+            return request
+        case let .explicitlyCancelled(request, _):
             return request
         case let .external(_, request, _):
             return request

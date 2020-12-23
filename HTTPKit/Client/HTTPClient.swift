@@ -65,7 +65,7 @@ public final class HTTPClient<API: ApiManager> : Client {
 
     /// 初始化方法
     public init(
-        session: Session = HTTPClient.defaultSession(),
+        session: Session = .default,
         plugins: [PluginType] = [],
         builder: BuilderType = Builder()
     ) {

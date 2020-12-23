@@ -172,6 +172,8 @@ extension RequestConvertible {
             default:
                 return HTTPError.external(error, request: request, response: response)
             }
+        case .explicitlyCancelled:
+            return HTTPError.explicitlyCancelled(request: request, response: response)
         default:
             return HTTPError.external(error, request: request, response: response)
         }

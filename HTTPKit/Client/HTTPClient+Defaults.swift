@@ -7,11 +7,9 @@
 
 import Foundation
 
-extension HTTPClient {
+public extension Session {
 
-    /// 默认的Alamofire.Session
-    public class func defaultSession() -> Session {
-
+    class var `default`: Session {
         let configuration = URLSessionConfiguration.default
         configuration.headers = HTTPHeaders.default
         configuration.timeoutIntervalForRequest = 15.0

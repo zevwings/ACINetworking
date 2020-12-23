@@ -25,7 +25,7 @@ public protocol Serviceable {
 
 }
 
-extension Serviceable {
+public extension Serviceable {
 
     var url: URL {
         guard let url = URL(string: baseURL) else {
@@ -45,7 +45,6 @@ extension Serviceable {
     func intercept(response: Response) throws -> Response {
         return response
     }
-
 }
 
 // MARK: - Transformer
