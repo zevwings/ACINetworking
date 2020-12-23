@@ -82,7 +82,7 @@ extension RequestConvertible where Self : DataRequest {
         progressHandler: @escaping InternalProgressHandler
     ) -> Self {
         switch self {
-        case let uploadRequest as UploadRequest:
+        case _ as UploadRequest:
             return uploadProgress(queue: queue) {  progress in
                 progressHandler(progress)
             }

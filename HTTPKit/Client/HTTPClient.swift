@@ -89,6 +89,8 @@ public final class HTTPClient<API: ApiManager> : Client {
         completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> TaskType? {
 
+        let service = api.service
+
         /// 构建Alamofire请求
         var alamoRequest: Requestable
         do {
@@ -114,7 +116,7 @@ public final class HTTPClient<API: ApiManager> : Client {
                 progressHandler?(ProgressResponse(progress: progress))
             }
         }
-        
+
         alamoRequest = alamoRequest.progress(
             queue: callbackQueue,
             progressHandler: internalProgressHandler
@@ -134,7 +136,13 @@ public final class HTTPClient<API: ApiManager> : Client {
             case .success(let response):
                 do {
                     var response = response
+
+                    // 服务统一拦截处理返回结果
+                    // 错误类型：自定义错误
+                    response = try service.intercept(response: response)
+
                     // 通过插件和拦截器处理返回结果
+                    // 错误类型：自定义错误
                     response = try self.plugins.reduce(response) { try $1.intercept(api: api, response: $0) }
                     var data = response.data
 
