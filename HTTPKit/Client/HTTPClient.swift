@@ -8,30 +8,79 @@
 import Foundation
 
 // MARK: - ProgressResponse
-public struct ProgressResponse {
 
-    public let response: Response?
-    public let progressObject: Progress?
+public enum ProgressValue {
+    case progress(Double)
+    case completed(Response)
+}
 
-    public init(progress: Progress? = nil, response: Response? = nil) {
-        self.progressObject = progress
-        self.response = response
-    }
+public enum ProgressResponse {
+    case progress(Progress)
+    case completed(Response?)
+}
 
-    public var progress: Double {
-        if completed {
-            return 1.0
-        } else if let progressObject = progressObject, progressObject.totalUnitCount > 0 {
-            return progressObject.fractionCompleted
-        } else {
-            return 0.0
+public extension ProgressResponse {
+    
+    var isCompleted: Bool {
+        switch self {
+        case .progress:
+            return false
+        case .completed:
+            return true
         }
     }
-
-    public var completed: Bool {
-        return response != nil
+    
+    var progress: Double {
+        switch self {
+        case let .progress(value):
+            return value.fractionCompleted
+        case .completed:
+            return 1.0
+        }
+    }
+    
+    var response: Response? {
+        switch self {
+        case .progress:
+            return nil
+        case let .completed(response):
+            return response
+        }
     }
 }
+
+//public struct ProgressResponse {
+//
+//    public let response: Response?
+//    public let progressObject: Progress?
+//
+//    public init(progress: Progress? = nil, response: Response? = nil) {
+//        self.progressObject = progress
+//        self.response = response
+//    }
+//
+//    public var progress: Double {
+//        if completed {
+//            return 1.0
+//        } else if let progressObject = progressObject, progressObject.totalUnitCount > 0 {
+//            return progressObject.fractionCompleted
+//        } else {
+//            return 0.0
+//        }
+//    }
+//
+//    public var value: ProgressValue {
+//        if completed {
+//            return .completed(response!)
+//        } else {
+//            return .progress(progressObject?.fractionCompleted ?? 0)
+//        }
+//    }
+//
+//    public var completed: Bool {
+//        return response != nil
+//    }
+//}
 
 // MARK: - Client
 
@@ -113,7 +162,8 @@ public final class HTTPClient<API: ApiManager> : Client {
             /// 通过插件和拦截器处理请求进度
             self.plugins.forEach { $0.process(api: api, progress: progress) }
             callbackQueue.async {
-                progressHandler?(ProgressResponse(progress: progress))
+                progressHandler?(.progress(progress))
+//                progressHandler?(ProgressResponse(progress: progress))
             }
         }
 
@@ -129,7 +179,9 @@ public final class HTTPClient<API: ApiManager> : Client {
 
             if let progressHandler = progressHandler {
                 let value = try? result.get()
-                progressHandler(ProgressResponse(progress: alamoRequest.executeProgress, response: value))
+                progressHandler(.completed(value))
+//                progressHandler?(.complted(value))
+//                progressHandler(ProgressResponse(progress: alamoRequest.executeProgress, response: value))
             }
 
             switch result {

@@ -45,7 +45,7 @@ public extension ObservableType where Element == ProgressResponse {
 
     func filterCompleted() -> Observable<Response> {
         return self
-            .filter { $0.completed }
+            .filter { $0.isCompleted }
             .flatMap { progress -> Observable<Response> in
                 switch progress.response {
                 case .some(let response): return .just(response)
@@ -55,6 +55,6 @@ public extension ObservableType where Element == ProgressResponse {
     }
 
     func filterProgress() -> Observable<Double> {
-        return self.filter { !$0.completed }.map { $0.progress }
+        return self.filter { !$0.isCompleted }.map { $0.progress }
     }
 }
