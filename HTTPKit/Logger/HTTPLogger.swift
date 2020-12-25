@@ -143,33 +143,3 @@ extension HTTPLogger.LogType {
         }
     }
 }
-
-private extension Result {
-
-    var isSuccess: Bool {
-        switch self {
-        case .success:
-            return true
-        case .failure:
-            return false
-        }
-    }
-
-    var isFailure: Bool {
-        switch self {
-        case .success:
-            return false
-        case .failure:
-            return true
-        }
-    }
-
-    var error: Error? {
-        switch self {
-        case .success:
-            return nil
-        case let .failure(error):
-            return error
-        }
-    }
-}

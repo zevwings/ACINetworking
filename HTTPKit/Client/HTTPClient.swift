@@ -7,81 +7,6 @@
 
 import Foundation
 
-// MARK: - ProgressResponse
-
-public enum ProgressValue {
-    case progress(Double)
-    case completed(Response)
-}
-
-public enum ProgressResponse {
-    case progress(Progress)
-    case completed(Response?)
-}
-
-public extension ProgressResponse {
-    
-    var isCompleted: Bool {
-        switch self {
-        case .progress:
-            return false
-        case .completed:
-            return true
-        }
-    }
-    
-    var progress: Double {
-        switch self {
-        case let .progress(value):
-            return value.fractionCompleted
-        case .completed:
-            return 1.0
-        }
-    }
-    
-    var response: Response? {
-        switch self {
-        case .progress:
-            return nil
-        case let .completed(response):
-            return response
-        }
-    }
-}
-
-//public struct ProgressResponse {
-//
-//    public let response: Response?
-//    public let progressObject: Progress?
-//
-//    public init(progress: Progress? = nil, response: Response? = nil) {
-//        self.progressObject = progress
-//        self.response = response
-//    }
-//
-//    public var progress: Double {
-//        if completed {
-//            return 1.0
-//        } else if let progressObject = progressObject, progressObject.totalUnitCount > 0 {
-//            return progressObject.fractionCompleted
-//        } else {
-//            return 0.0
-//        }
-//    }
-//
-//    public var value: ProgressValue {
-//        if completed {
-//            return .completed(response!)
-//        } else {
-//            return .progress(progressObject?.fractionCompleted ?? 0)
-//        }
-//    }
-//
-//    public var completed: Bool {
-//        return response != nil
-//    }
-//}
-
 // MARK: - Client
 
 public protocol Client : AnyObject {
@@ -160,10 +85,9 @@ public final class HTTPClient<API: ApiManager> : Client {
         /// 处理进度
         let internalProgressHandler: InternalProgressHandler = { progress in
             /// 通过插件和拦截器处理请求进度
-            self.plugins.forEach { $0.process(api: api, progress: progress) }
+            self.plugins.forEach { $0.process(api: api, progress: .progress(progress)) }
             callbackQueue.async {
                 progressHandler?(.progress(progress))
-//                progressHandler?(ProgressResponse(progress: progress))
             }
         }
 
@@ -177,13 +101,6 @@ public final class HTTPClient<API: ApiManager> : Client {
 
             self.plugins.forEach { $0.didReceive(api: api, result: result) }
 
-            if let progressHandler = progressHandler {
-                let value = try? result.get()
-                progressHandler(.completed(value))
-//                progressHandler?(.complted(value))
-//                progressHandler(ProgressResponse(progress: alamoRequest.executeProgress, response: value))
-            }
-
             switch result {
             case .success(let response):
                 do {
@@ -196,13 +113,18 @@ public final class HTTPClient<API: ApiManager> : Client {
                     // 通过插件和拦截器处理返回结果
                     // 错误类型：自定义错误
                     response = try self.plugins.reduce(response) { try $1.intercept(api: api, response: $0) }
+
+                    // 返回结果处理完成后，进度回调发送完成『成功』
+                    progressHandler?(.completed(.success(response)))
+
                     var data = response.data
 
-                    // 当`Request`实现`RequestPaginator`协议时，进行分页相关操作并对数据进行转换
+                    // 当`Request`实现`Paginator`协议时，进行分页相关操作并对数据进行转换
                     // 错误类型：自定义错误
                     if let paginator = api.paginator {
                         try paginator.updateIndex(data)
                     }
+                    
                     // 通过`Transformer`对返回数据进行数据处理
                     // 错误类型：自定义错误
                     if let transformer = api.transformer {
@@ -212,6 +134,7 @@ public final class HTTPClient<API: ApiManager> : Client {
 
                     self.plugins.forEach { $0.didComplete(api: api, result: .success(response)) }
                     HTTPLogger.log(.info, logType: .response, urlRequest: response.request, value: response)
+                    
                     completionHandler(.success(response))
                 } catch let error as HTTPError {
                     HTTPLogger.log(.error, logType: .response, error: error, value: response)
@@ -222,7 +145,14 @@ public final class HTTPClient<API: ApiManager> : Client {
                     completionHandler(.failure(err))
                 }
             case .failure(let error):
+                
+                self.plugins.forEach { $0.didComplete(api: api, result: .failure(error)) }
+
                 HTTPLogger.log(.error, logType: .response, error: error)
+                ///进度回调发送完成『失败』
+                progressHandler?(.completed(.failure(error)))
+                
+                // 返回结果处理完成后，进度回调发送完成
                 completionHandler(.failure(error))
             }
         }

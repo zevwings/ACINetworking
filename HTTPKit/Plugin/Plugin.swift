@@ -24,7 +24,7 @@ public protocol PluginType {
     func willSend<API>(api: API, urlRequest: URLRequest) where API: ApiManager
 
     /// 网络请求进度回调
-    func process<API>(api: API, progress: Progress) where API: ApiManager
+    func process<API>(api: API, progress: ProgressResponse) where API: ApiManager
 
     /// 网络请求收到结果
     func didReceive<API>(api: API, result: Result<Response, HTTPError>) where API: ApiManager
@@ -56,7 +56,7 @@ extension PluginType {
 
     }
 
-    public func process<API>(api: API, progress: Progress) where API: ApiManager {
+    public func process<API>(api: API, progress: ProgressResponse) where API: ApiManager {
 
     }
 

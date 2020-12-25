@@ -74,12 +74,5 @@ public extension Reactive where Base: Client {
         }
   
         return response
-//        response.scan(<#T##seed: A##A#>, accumulator: <#T##(A, ProgressResponse) throws -> A#>)
-//
-//        return response.scan(ProgressResponse(), accumulator: { (last, progress) in
-//            let progressObject = progress.progressObject ?? last.progressObject
-//            let response = progress.response ?? last.response
-//            return ProgressResponse(progress: progressObject, response: response)
-//        })
     }
 }

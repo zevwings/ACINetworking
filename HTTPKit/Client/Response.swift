@@ -13,6 +13,45 @@ import UIKit
 public typealias Image = UIImage
 #endif
 
+// MARK: - ProgressResponse
+
+public enum ProgressResponse {
+    case progress(Progress)
+    case completed(Result<Response, HTTPError>)
+}
+
+public extension ProgressResponse {
+
+    var isCompleted: Bool {
+        switch self {
+        case .progress:
+            return false
+        case .completed:
+            return true
+        }
+    }
+
+    var progress: Double {
+        switch self {
+        case let .progress(value):
+            return value.fractionCompleted
+        case .completed:
+            return 1.0
+        }
+    }
+
+    var response: Response? {
+        switch self {
+        case .progress:
+            return nil
+        case let .completed(response):
+            return try? response.get()
+        }
+    }
+}
+
+// MARK: - Response
+
 public final class Response {
 
     public let request: URLRequest?
@@ -142,6 +181,36 @@ public extension Response {
                 throw HTTPError.cast(value: data, targetType: String.self, request: request, response: response)
             }
             return string
+        }
+    }
+}
+
+extension Result {
+    
+    public var isSuccess: Bool {
+        switch self {
+        case .success:
+            return true
+        case .failure:
+            return false
+        }
+    }
+    
+    public  var isFailure: Bool {
+        switch self {
+        case .success:
+            return false
+        case .failure:
+            return true
+        }
+    }
+    
+    public var error: Error? {
+        switch self {
+        case .success:
+            return nil
+        case let .failure(error):
+            return error
         }
     }
 }

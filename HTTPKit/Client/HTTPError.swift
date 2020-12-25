@@ -154,16 +154,16 @@ extension Error {
         return self as? HTTPError
     }
 
-    public func asAFError(or defaultAFError: @autoclosure () -> HTTPError) -> HTTPError {
+    public func asHTTPError(or defaultAFError: @autoclosure () -> HTTPError) -> HTTPError {
         self as? HTTPError ?? defaultAFError()
     }
-    
+
     public var requestError: RequestError? {
         let error = self as? HTTPError
         return error?.error.asAFError
     }
-    
-    public func asAFError(or defaultAFError: @autoclosure () -> RequestError) -> RequestError {
+
+    public func asRequestError(or defaultAFError: @autoclosure () -> RequestError) -> RequestError {
         self as? RequestError ?? defaultAFError()
     }
 }
