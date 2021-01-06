@@ -7,63 +7,6 @@
 
 import Foundation
 
-// MARK: - Serviceable
-
-public protocol Serviceable {
-
-    /// 服务器基础路径
-    var baseURL: String { get }
-
-    /// 拦截请求参数，可以在生成`URLRequest`之前，对参数进行修改
-    func intercept(paramters: [String: Any]?) throws -> [String: Any]?
-
-    /// 拦截网络请求，可以在发起网络请求之前，对`URLRequest`进行修改
-    func intercept(urlRequest: URLRequest) throws -> URLRequest
-
-    /// 拦截网络请求结果，可以在反序列化结果之前对返回结果`Response`进行修改
-    func intercept(response: Response) throws -> Response
-
-}
-
-public extension Serviceable {
-
-    var url: URL {
-        guard let url = URL(string: baseURL) else {
-            fatalError("无法转化为正确的URL")
-        }
-        return url
-    }
-
-    func intercept(paramters: [String: Any]?) throws -> [String: Any]? {
-        return paramters
-    }
-
-    func intercept(urlRequest: URLRequest) throws -> URLRequest {
-        return urlRequest
-    }
-
-    func intercept(response: Response) throws -> Response {
-        return response
-    }
-}
-
-// MARK: - Transformer
-
-public protocol Transformer {
-
-    /// 将服务器返回数据转换为业务数据
-    ///
-    /// - Parameters:
-    ///   - data: 转换前的数据
-    ///   - request: 请求
-    /// - Returns: 转换后的数据
-    /// - Throws: 转换异常
-    func transform(_ data: Data) throws -> Data
-
-}
-
-// MARK: -
-
 public protocol ApiManager {
 
     /// 服务器

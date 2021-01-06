@@ -44,8 +44,17 @@ public extension ProgressResponse {
         switch self {
         case .progress:
             return nil
-        case let .completed(response):
-            return try? response.get()
+        case let .completed(result):
+            return try? result.get()
+        }
+    }
+
+    var error: Error? {
+        switch self {
+        case .progress:
+            return nil
+        case let .completed(result):
+            return result.error
         }
     }
 }
@@ -185,9 +194,11 @@ public extension Response {
     }
 }
 
-extension Result {
-    
-    public var isSuccess: Bool {
+// MARK: - Result
+
+public extension Result {
+
+    var isSuccess: Bool {
         switch self {
         case .success:
             return true
@@ -195,8 +206,8 @@ extension Result {
             return false
         }
     }
-    
-    public  var isFailure: Bool {
+
+    var isFailure: Bool {
         switch self {
         case .success:
             return false
@@ -204,8 +215,8 @@ extension Result {
             return true
         }
     }
-    
-    public var error: Error? {
+
+    var error: Error? {
         switch self {
         case .success:
             return nil

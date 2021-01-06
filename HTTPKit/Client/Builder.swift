@@ -26,8 +26,9 @@ public class Builder : BuilderType {
 
     public init() {}
 
+    // swiftlint:disable function_body_length
+
     /// 处理`Request`，将`Request`处理构建成一个`Alamofire.Request`
-    //swiftlint:disable function_body_length
     public func process<API>(
         api: API,
         session: Session,
@@ -37,8 +38,6 @@ public class Builder : BuilderType {
         guard let url = URL(string: api.route.path, relativeTo: api.service.url) else {
             throw HTTPError.invalidUrl(url: api.service.url, path: api.route.path)
         }
-
-        let service = api.service
 
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = api.route.method.rawValue
@@ -56,10 +55,6 @@ public class Builder : BuilderType {
                 parameters?[paginator.indexKey] = paginator.index
             }
 
-            /// 服务全局拦截器处理请求参数
-            /// 错误类型：自定义错误
-            parameters = try service.intercept(paramters: parameters)
-
             /// 通过插件和拦截器处理请求参数
             /// 错误类型：自定义错误
             parameters = try plugins.reduce(parameters) { try $1.intercept(api: api, paramters: parameters)}
@@ -75,17 +70,9 @@ public class Builder : BuilderType {
             }
         }
 
-        /// 通过插件和拦截器处理网络请求
-        /// 错误类型：自定义错误
-        urlRequest = try service.intercept(urlRequest: urlRequest)
-
         /// 服务全局拦截器处理网络请求
         /// 错误类型：自定义错误
         urlRequest = try plugins.reduce(urlRequest) { try $1.intercept(api: api, urlRequest: urlRequest) }
-
-        /// 将要发送网络请求
-
-        plugins.forEach { $0.willSend(api: api, urlRequest: urlRequest) }
 
         let retriers = plugins.compactMap { $0.retry(api: api, urlRequest: urlRequest) }
         let interceptor: Alamofire.Interceptor? = plugins.isEmpty ?
@@ -119,5 +106,6 @@ public class Builder : BuilderType {
 
         return (urlRequest, alamoRequest)
     }
-    //swiftlint:enable function_body_length
+
+    // swiftlint:enable function_body_length
 }

@@ -70,6 +70,7 @@ public protocol RequestConvertible {
 extension RequestConvertible where Self : DataRequest {
 
     public var executeProgress: Progress {
+
         switch self {
         case let uploadRequest as UploadRequest:
             return uploadRequest.uploadProgress
@@ -82,6 +83,7 @@ extension RequestConvertible where Self : DataRequest {
         queue: DispatchQueue = .main,
         progressHandler: @escaping InternalProgressHandler
     ) -> Self {
+
         switch self {
         case _ as UploadRequest:
             return uploadProgress(queue: queue) {  progress in
@@ -98,6 +100,7 @@ extension RequestConvertible where Self : DataRequest {
         queue: DispatchQueue = .main,
         completionHandler: @escaping (Result<Response, HTTPError>) -> Void
     ) -> Self {
+
         let internalCompletionHandler: (DataResponse<Response, AFError>) -> Void = { response in
             switch response.result {
             case .success(let value):
@@ -154,7 +157,7 @@ extension RequestConvertible where Self : DownloadRequest {
     }
 }
 
-extension RequestConvertible {
+private extension RequestConvertible {
 
     /// 处理 Alamofire 错误消息为 HTTPError
     /// - Parameters:

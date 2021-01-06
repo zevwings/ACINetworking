@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4D1C471025A585BC0096B8A2 /* Serviceable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1C470F25A585BC0096B8A2 /* Serviceable.swift */; };
+		4D1C471825A585EF0096B8A2 /* Transformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D1C471725A585EF0096B8A2 /* Transformer.swift */; };
 		4D2C0D97248E04F900D82944 /* RxHTTPKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D2C0D8E248E04F900D82944 /* RxHTTPKit.framework */; };
 		4D2C0D9C248E04F900D82944 /* RxHTTPKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D2C0D9B248E04F900D82944 /* RxHTTPKitTests.swift */; };
 		4D2C0D9E248E04F900D82944 /* RxHTTPKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D2C0D90248E04F900D82944 /* RxHTTPKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -80,6 +82,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4D1C470F25A585BC0096B8A2 /* Serviceable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Serviceable.swift; sourceTree = "<group>"; };
+		4D1C471725A585EF0096B8A2 /* Transformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transformer.swift; sourceTree = "<group>"; };
 		4D2C0D8E248E04F900D82944 /* RxHTTPKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RxHTTPKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D2C0D90248E04F900D82944 /* RxHTTPKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RxHTTPKit.h; sourceTree = "<group>"; };
 		4D2C0D91248E04F900D82944 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -229,12 +233,14 @@
 		4D6F955D24EE6E2200F6D2D2 /* ApiManager */ = {
 			isa = PBXGroup;
 			children = (
-				4D6F955E24EE6E2200F6D2D2 /* MultipartFormData.swift */,
-				4D6F955F24EE6E2200F6D2D2 /* ValidationType.swift */,
-				4D6F956024EE6E2200F6D2D2 /* Parameters.swift */,
 				4D6F956124EE6E2200F6D2D2 /* ApiManager.swift */,
-				4D6F956224EE6E2200F6D2D2 /* Content.swift */,
+				4D1C470F25A585BC0096B8A2 /* Serviceable.swift */,
 				4D6F956324EE6E2200F6D2D2 /* Route.swift */,
+				4D6F956224EE6E2200F6D2D2 /* Content.swift */,
+				4D6F955F24EE6E2200F6D2D2 /* ValidationType.swift */,
+				4D1C471725A585EF0096B8A2 /* Transformer.swift */,
+				4D6F956024EE6E2200F6D2D2 /* Parameters.swift */,
+				4D6F955E24EE6E2200F6D2D2 /* MultipartFormData.swift */,
 			);
 			path = ApiManager;
 			sourceTree = "<group>";
@@ -555,6 +561,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D6F955024EE6C5100F6D2D2 /* Plugin.swift in Sources */,
+				4D1C471825A585EF0096B8A2 /* Transformer.swift in Sources */,
 				4D6F954E24EE6C5100F6D2D2 /* Paginator.swift in Sources */,
 				4D6F956624EE6E2200F6D2D2 /* Parameters.swift in Sources */,
 				4D6F955724EE6C5100F6D2D2 /* Task.swift in Sources */,
@@ -565,6 +572,7 @@
 				4D6F956424EE6E2200F6D2D2 /* MultipartFormData.swift in Sources */,
 				4D6F956824EE6E2200F6D2D2 /* Content.swift in Sources */,
 				4D6F955524EE6C5100F6D2D2 /* HTTPError.swift in Sources */,
+				4D1C471025A585BC0096B8A2 /* Serviceable.swift in Sources */,
 				4D6F955324EE6C5100F6D2D2 /* HTTPClient.swift in Sources */,
 				4D6F956724EE6E2200F6D2D2 /* ApiManager.swift in Sources */,
 				4D6F955224EE6C5100F6D2D2 /* Builder.swift in Sources */,
@@ -866,10 +874,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = HTTPKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -896,10 +901,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = HTTPKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
