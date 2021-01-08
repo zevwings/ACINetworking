@@ -128,21 +128,29 @@ public final class HTTPClient<API: ApiManager> : Client {
                     }
 
                     self.plugins.forEach { $0.didComplete(api: api, result: .success(response)) }
-                    completionHandler(.success(response))
+                    callbackQueue.async {
+                        completionHandler(.success(response))
+                    }
                     HTTPLogger.log(.info, logType: .response, urlRequest: response.request, value: response)
                 } catch let error as HTTPError {
                     self.plugins.forEach { $0.didComplete(api: api, result: .failure(error)) }
-                    completionHandler(.failure(error))
+                    callbackQueue.async {
+                        completionHandler(.failure(error))
+                    }
                     HTTPLogger.log(.error, logType: .response, error: error, value: response)
                 } catch let error {
                     let err = HTTPError.underlying(error, request: response.request, response: response.response)
                     self.plugins.forEach { $0.didComplete(api: api, result: .failure(err)) }
-                    completionHandler(.failure(err))
+                    callbackQueue.async {
+                        completionHandler(.failure(err))
+                    }
                     HTTPLogger.log(.error, logType: .response, error: err, value: response)
                 }
             case .failure(let error):
                 self.plugins.forEach { $0.didComplete(api: api, result: .failure(error)) }
-                completionHandler(.failure(error))
+                callbackQueue.async {
+                    completionHandler(.failure(error))
+                }
                 HTTPLogger.log(.error, logType: .response, error: error)
             }
         }
