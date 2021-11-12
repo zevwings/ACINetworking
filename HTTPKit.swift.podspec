@@ -23,18 +23,7 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => "https://github.com/zevwings/HTTPKit.git", :tag => "#{spec.version}" }
   spec.requires_arc = true
 
-  spec.default_subspecs = "Core"
-
-  spec.subspec "Core" do |core|
-    core.source_files = "HTTPKit/HTTPKit.h", "HTTPKit/**/*.swift"
-    core.dependency "Alamofire"
-  end
-
-  spec.subspec "RxSwift" do |rx|
-    rx.source_files = "RxHTTPKit/RxSupport.h", "RxHTTPKit/**/*.swift"
-    rx.dependency "HTTPKit.swift/Core"
-    rx.dependency "RxSwift"
-  end
+  spec.source_files = "Sources/**/*.swift"
 
 end
 
