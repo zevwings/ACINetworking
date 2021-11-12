@@ -3,9 +3,11 @@ Pod::Spec.new do |spec|
 
   spec.name           = "HTTPKit.swift"
   spec.module_name    = "HTTPKit"
-  spec.version        = "2.2.2"
-  spec.summary        = "A network layer base on Alamofire."
+  spec.version        = "2.2.3"
+  spec.summary        = "HTTPKit is deprecated, please use ACINetworking instead."
   spec.swift_version  = "5.1"
+  spec.deprecated     = true
+
 
   spec.description  = <<-DESC
                     A network layer base on Alamofire.
