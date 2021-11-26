@@ -1,0 +1,51 @@
+disabled_rules:
+  - colon
+  - control_statement
+  # - trailing_whitespace
+  - file_length
+  - type_body_length
+  - function_body_length
+  - cyclomatic_complexity
+
+opt_in_rules:
+  - empty_count
+
+included:
+  - Sources
+
+excluded:
+  - Carthage
+  - Pods
+  - Source/ExcludedFolder
+  - Source/ExcludedFile.swift
+  - Source/*/ExcludedFile.swift
+
+analyzer_rules:
+  - explicit_self
+
+force_cast: warning
+
+force_try:
+  severity: warning
+
+line_length:
+  - 120
+  - 150
+
+type_name:
+  min_length: 3
+  max_length:
+    warning: 40
+    error: 50
+
+identifier_name:
+  min_length:
+    error: 3
+  excluded:
+    - id
+    - URL
+    - GlobalAPIKey
+    - on
+    - off
+
+reporter: "xcode"
