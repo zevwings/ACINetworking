@@ -268,7 +268,7 @@ github "zevwings/ZVRefreshing"
 ```
 
 # 其他
-欢迎和我一起讨论 iOS 的网络封装和其他的技术讨论。
+欢迎和我一起讨论 iOS 的网络封装和其他的技术问题。
 <br />
 邮箱：<zev.wings@gmail.com>
 <br />
