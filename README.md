@@ -267,6 +267,20 @@ github "zevwings/ZVRefreshing"
 .package(url: "https://github.com/zevwings/ACINetworking.git", .upToNextMajor(from: "3.0.0"))
 ```
 
+# 拓展示例
+
+### RxSwift 拓展示例
+[ACINetworkingRxSwiftExample](https://github.com/zevwings/ACINetworkingRxSwiftExample)
+此示例是[RxSwift](https://github.com/ReactiveX/RxSwift)的拓展使用，可以方便快捷的使用将`Response`对象编程`Observerbale<Response>`或者`Single<Response>`。
+
+### HandyJSON 拓展示例
+[ACINetwrokingHandyJSONExample](https://github.com/zevwings/ACINetwrokingHandyJSONExample)
+此示例是[HandyJSON](https://github.com/alibaba/HandyJSON)的拓展使用，可以更方便快捷的将数据模型转换为 HandyJSON 对象
+
+### SwiftyJSON 拓展示例
+[ACINetwrokingSwiftyJSONExample](https://github.com/zevwings/ACINetwrokingSwiftyJSONExample)
+此示例是[SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)的拓展使用，可以更方便快捷的将数据模型转换为 SwiftyJSON 对象
+
 # 其他
 欢迎和我一起讨论 iOS 的网络封装和其他的技术问题。
 <br />
