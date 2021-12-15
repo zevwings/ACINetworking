@@ -271,7 +271,7 @@ github "zevwings/ZVRefreshing"
 
 ### RxSwift 拓展示例
 [ACINetworkingRxSwiftExample](https://github.com/zevwings/ACINetworkingRxSwiftExample)
-此示例是[RxSwift](https://github.com/ReactiveX/RxSwift)的拓展使用，可以方便快捷的使用将`Response`对象编程`Observerbale<Response>`或者`Single<Response>`。
+此示例是[RxSwift](https://github.com/ReactiveX/RxSwift)的拓展使用，可以方便快捷的使用将`Response`对象转换为`Observerbale<Response>`或者`Single<Response>`。
 
 ### HandyJSON 拓展示例
 [ACINetwrokingHandyJSONExample](https://github.com/zevwings/ACINetwrokingHandyJSONExample)
